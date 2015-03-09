@@ -40,7 +40,6 @@ class StreamingManager(Thread):
 serveurStreaming = StreamingManager()
 
 def twitterStreaming():
-    import socket
     from time import sleep
     sleep(5)
     try:
