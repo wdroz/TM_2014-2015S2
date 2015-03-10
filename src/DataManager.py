@@ -9,6 +9,7 @@ import requests
 import re
 import datetime
 import HTMLParser
+import pickle
 
 class MarketStatus(object):
     '''
@@ -44,7 +45,7 @@ class News(object):
         self.marketStatus = marketStatus
         
     def __str__(self):
-        myString = '[%s] from %s : %s\n' % (str(self.pubDate.strftime('%d-%m-%Y')), str(self.pubSource)[:30], str(self.publication)[:50])
+        myString = '[%s] from %s : %s\n' % (str(self.pubDate.strftime('%d-%m-%Y')), str(self.pubSource)[:30], str(self.publication))
         for marketStatus in self.marketStatus:
             myString += '\t' + str(marketStatus) + '\n'
         return myString
@@ -79,6 +80,12 @@ class NewsSource(object):
         for new in self.news:
             myString += str(new) + '\n++++++++++++++++++++++++++++++++++++\n'
         return myString
+        
+    def save(self, filename):
+        pickle.dump(self.__dict__, open(filename, "wb" ))
+        
+    def load(self, filename):
+        self.__dict__ = pickle.load(open(filename, "rb" ))
 
 class MarketSource(object):
     '''
@@ -159,4 +166,24 @@ class ReutersNewsSource(NewsSource):
     '''
     pas encore utilisé
     '''
-    pass
+    def __init__(self, filename):
+        NewsSource.__init__(self)
+        self.filename = filename
+        
+    def lookingAt(self, symbole, startDate, endDate):
+        startDate = datetime.datetime.strptime(startDate, "%Y-%m-%d")
+        endDate = datetime.datetime.strptime(endDate, "%Y-%m-%d")
+        upperSymbole = symbole.upper()
+        f = open(self.filename, 'r')
+        for line in f:
+            try:
+                lines = line.split(',')
+                date = datetime.datetime.strptime(lines[0], "%Y-%m-%d %H:%M:%S")
+                if(date >= startDate and date <= endDate):
+                    head = lines[1]
+                    msg = ''.join(lines[2:])
+                    if(upperSymbole in head or upperSymbole in msg):
+                        self.news.append(News(pubDate=date, symbole=symbole, publication=head, pubSource="Reuters"))
+            except:
+                pass # explicative line or empty
+        f.close()
