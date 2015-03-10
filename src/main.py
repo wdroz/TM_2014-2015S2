@@ -4,8 +4,7 @@ Created on Mon Mar  9 12:55:38 2015
 
 @author: droz
 """
-
-from DataManager import GoogleFinanceNewsSource, GoogleFinanceMarketSource, ReutersNewsSource
+import DataManager
 
 if __name__ == "__main__":
     '''
@@ -17,7 +16,7 @@ if __name__ == "__main__":
     print(str(gfns))
     '''
     
-    rns = ReutersNewsSource('/media/droz/KIKOOLOL HDD/Corpus/headlines-docs.csv')
+    #rns = ReutersNewsSource('/media/droz/KIKOOLOL HDD/Corpus/headlines-docs.csv')
     #rns.lookingAt("Googl", '2000-01-01','2015-03-03')
 
     #gfms = GoogleFinanceMarketSource()
@@ -25,6 +24,11 @@ if __name__ == "__main__":
     
     #rns.save('backup.p')
     
-    rns.load('backup.p')    
+    #rns.load('backup.p')    
     
-    print(str(rns))
+    #print(str(rns))
+    DataManager.MessageManager.DEBUG = True
+    dm = DataManager.DataManager.easyBuild()
+    dm.lookingAt('NASDAQ:GOOG','2000-01-01','2015-03-03', ['GOOG'])
+    dm.save('google.p')
+    print(str(dm))

@@ -11,6 +11,14 @@ import datetime
 import HTMLParser
 import pickle
 
+class MessageManager(object):
+    DEBUG = True
+    
+    @staticmethod
+    def debugMessage(text):
+        if(MessageManager.DEBUG):
+            print(text)
+
 class MarketStatus(object):
     '''
     Classe qui contient les informations principales boursière d'un jour.
@@ -52,9 +60,58 @@ class News(object):
 
 class DataManager(object):
     '''
-    Pas encore utilié
+    Pas encore utilisé
     '''
-    pass
+    DEFAULT_BACKUP_FILENAME='dataManager.p'
+    
+    def __init__(self):
+        self.listNewsSource = []
+        self.marketSource = None
+        self.news = []
+        
+    def addNewsSource(self, newsSource):
+        self.listNewsSource.append(newsSource)
+
+    def setMarketSource(self, marketSource):
+        self.marketSource = marketSource        
+        
+    def save(self, filename):
+        pickle.dump(self.__dict__, open(filename, "wb" ))
+        
+    def load(self, filename):
+        self.__dict__ = pickle.load(open(filename, "rb" ))
+        
+    def lookingAt(self, symbole, startDate, endDate, keywords):
+        startDate = datetime.datetime.strptime(startDate, "%Y-%m-%d")
+        endDate = datetime.datetime.strptime(endDate, "%Y-%m-%d")
+        for newsSource in self.listNewsSource:
+            newsSource.lookingAt(symbole, startDate, endDate, keywords)
+            self.marketSource.addMarketStatusToNews(newsSource.news)
+            self.news += newsSource.news
+        self.news = sorted(self.news, key=lambda x:x.pubDate)
+    
+    @staticmethod
+    def easyBuild(load=False, save=True):
+        dm = DataManager()
+        if(load):
+            dm.load(DataManager.DEFAULT_BACKUP_FILENAME)
+        else:
+            gfns = GoogleFinanceNewsSource()
+            gfms = GoogleFinanceMarketSource()
+            rns = ReutersNewsSource('/media/droz/KIKOOLOL HDD/Corpus/headlines-docs.csv')
+            dm.addNewsSource(gfns)
+            dm.addNewsSource(rns)
+            dm.setMarketSource(gfms)
+            if(save):
+                dm.save(DataManager.DEFAULT_BACKUP_FILENAME)
+        return dm
+        
+    def __str__(self):
+        myString = ''
+        for new in self.news:
+            myString += str(new) + '\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n'
+        return myString
+    
 
 class NewsSource(object):
     '''
@@ -113,12 +170,12 @@ class GoogleFinanceNewsSource(NewsSource):
         self.num = 10
         self.h = HTMLParser.HTMLParser()
         
-    def lookingAt(self, symbole, startDate, endDate):
+    def lookingAt(self, symbole, startDate, endDate, keywords):
         hasMoreQuote=True
-        params = {'q' : symbole, 'startdate' : str(startDate), 'enddate' : str(endDate), 'start' : 0, 'num' : self.num}
+        params = {'q' : symbole, 'startdate' : str(startDate.strftime('%Y-%m-%d')), 'enddate' : str(endDate.strftime('%Y-%m-%d')), 'start' : 0, 'num' : self.num}
         while(hasMoreQuote):
             r = requests.get(self.url, params=params)
-            print('request...')
+            MessageManager.debugMessage("GoogleFinanceNewsSource : request")
             text = self.h.unescape(r.text).encode('utf-8')
             quotes = re.findall(self.expNews, text)  
             dates = re.findall(self.expDate, text)
@@ -148,6 +205,7 @@ class GoogleFinanceMarketSource(MarketSource):
             enddate = new.pubDate + datetime.timedelta(days=7)
             params = {'q' : new.symbole, 'startdate' : new.pubDate.strftime('%Y-%m-%d'), 'enddate' : enddate.strftime('%Y-%m-%d'), 'num' : 30, 'output' : 'csv'}
             r = requests.get(self.url, params=params)
+            MessageManager.debugMessage("GoogleFinanceMarketSource : request")
             isFirstLline=True
             new.marketStatus = []
             for line in r.text.encode('utf-8').split('\n'):
@@ -170,10 +228,15 @@ class ReutersNewsSource(NewsSource):
         NewsSource.__init__(self)
         self.filename = filename
         
-    def lookingAt(self, symbole, startDate, endDate):
-        startDate = datetime.datetime.strptime(startDate, "%Y-%m-%d")
-        endDate = datetime.datetime.strptime(endDate, "%Y-%m-%d")
-        upperSymbole = symbole.upper()
+    def hasAnyofTheresKeywords(self, keywords, text):
+        for word in keywords:
+            if(word in text):
+                return True
+        return False
+        
+    def lookingAt(self, symbole, startDate, endDate, keywords):
+        upperKeywords = [x.upper() for x in keywords]
+        MessageManager.debugMessage("ReutersNewsSource : start reading Reuters corpus")
         f = open(self.filename, 'r')
         for line in f:
             try:
@@ -182,8 +245,11 @@ class ReutersNewsSource(NewsSource):
                 if(date >= startDate and date <= endDate):
                     head = lines[1]
                     msg = ''.join(lines[2:])
-                    if(upperSymbole in head or upperSymbole in msg):
+                    if(self.hasAnyofTheresKeywords(upperKeywords, head) or self.hasAnyofTheresKeywords(upperKeywords, msg)):
+                        MessageManager.debugMessage("ReutersNewsSource : head or msg has keywords")
                         self.news.append(News(pubDate=date, symbole=symbole, publication=head, pubSource="Reuters"))
             except:
                 pass # explicative line or empty
         f.close()
+        MessageManager.debugMessage("ReutersNewsSource : stop reading Reuters corpus")
+        MessageManager.debugMessage("ReutersNewsSource : %d news found" % len(self.news))
