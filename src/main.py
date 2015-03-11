@@ -5,6 +5,7 @@ Created on Mon Mar  9 12:55:38 2015
 @author: droz
 """
 import DataManager
+from ToolsTM import easyBuildDataManager
 
 if __name__ == "__main__":
     '''
@@ -28,10 +29,10 @@ if __name__ == "__main__":
     
     #print(str(rns))
     DataManager.MessageManager.DEBUG = True
-    dm = DataManager.DataManager.easyBuild(load=False, save=True)
-    dm.lookingAll('NASDAQ:GOOGL', ['GOOG'])
-    dm.lookingAll('SCMN.VX', ['SWISSCOM'])
-    dm.save('googleAndSwisscom.p')
-    #dm.load('google.p')    
+    dm = easyBuildDataManager(load=False, save=True)
+    #dm.lookingAll('NASDAQ:GOOGL', ['GOOG'])
+    #dm.lookingAll('SCMN.VX', ['SWISSCOM'])
+    #dm.save('googleAndSwisscom.p')
+    dm.load('googleAndSwisscom.p')    
     print(str(dm))
     
