@@ -4,7 +4,6 @@ Created on Mon Mar  9 12:55:38 2015
 
 @author: droz
 """
-import DataManager
 from MessageManager import MessageManager
 from ToolsTM import easyBuildDataManager
 
