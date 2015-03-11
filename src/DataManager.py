@@ -12,13 +12,7 @@ import time
 import HTMLParser
 import pickle
 
-class MessageManager(object):
-    DEBUG = True
-    
-    @staticmethod
-    def debugMessage(text):
-        if(MessageManager.DEBUG):
-            print(text)
+from MessageManager import MessageManager
 
 class MarketStatus(object):
     '''
