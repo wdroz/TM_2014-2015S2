@@ -5,13 +5,9 @@ Created on Mon Mar  9 12:54:03 2015
 @author: droz
 """
 
-import requests
-import re
 import datetime
 import time
 import pickle
-
-from MessageManager import MessageManager
 
 class MarketStatus(object):
     '''

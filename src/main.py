@@ -5,6 +5,7 @@ Created on Mon Mar  9 12:55:38 2015
 @author: droz
 """
 import DataManager
+from MessageManager import MessageManager
 from ToolsTM import easyBuildDataManager
 
 if __name__ == "__main__":
@@ -28,7 +29,7 @@ if __name__ == "__main__":
     #rns.load('backup.p')    
     
     #print(str(rns))
-    DataManager.MessageManager.DEBUG = True
+    MessageManager.DEBUG = True
     dm = easyBuildDataManager(load=False, save=True)
     #dm.lookingAll('NASDAQ:GOOGL', ['GOOG'])
     dm.lookingAll('VTX:SCMN', ['SWISSCOM'])

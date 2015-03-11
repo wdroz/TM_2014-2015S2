@@ -5,8 +5,10 @@ Created on Wed Mar 11 09:33:13 2015
 @author: droz
 """
 
-from DataManager import DataManager, GoogleFinanceMarketSource, ReutersNewsSource
+from DataManager import DataManager
 from GoogleFinanceNewsSource import GoogleFinanceNewsSource
+from GoogleFinanceMarketSource import GoogleFinanceMarketSource
+from ReutersNewsSource import ReutersNewsSource
 
 def easyBuildDataManager(load=False, save=True):
     dm = DataManager()
