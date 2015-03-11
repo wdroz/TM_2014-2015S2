@@ -31,7 +31,7 @@ if __name__ == "__main__":
     DataManager.MessageManager.DEBUG = True
     dm = easyBuildDataManager(load=False, save=True)
     #dm.lookingAll('NASDAQ:GOOGL', ['GOOG'])
-    dm.lookingAll('SCMN.VX', ['SWISSCOM'])
+    dm.lookingAll('VTX:SCMN', ['SWISSCOM'])
     #dm.save('googleAndSwisscom.p')
     #dm.load('googleAndSwisscom.p')    
     print(str(dm))
