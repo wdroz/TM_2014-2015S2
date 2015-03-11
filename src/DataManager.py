@@ -62,6 +62,9 @@ class DataManager(object):
         self.marketSource = None
         self.news = []
         
+    def saveNewsWithDataWritter(self, dataWritter):
+        dataWritter.serialize(self.news)
+        
     def addNewsSource(self, newsSource):
         self.listNewsSource.append(newsSource)
 

@@ -6,7 +6,8 @@ Created on Mon Mar  9 12:55:38 2015
 """
 from MessageManager import MessageManager
 from ToolsTM import easyBuildDataManager
-
+from DataWritter import DataWritter
+import pickle
 if __name__ == "__main__":
     '''
     gfns = GoogleFinanceNewsSource()
@@ -34,5 +35,5 @@ if __name__ == "__main__":
     dm.lookingAll('VTX:SCMN', ['SWISSCOM'])
     dm.save('googleAndSwisscom.p')
     #dm.load('googleAndSwisscom.p')    
+    dm.saveNewsWithDataWritter(DataWritter('/media/droz/KIKOOLOL HDD/Corpus/pickle/', pickle.dump))
     print(str(dm))
-    
