@@ -86,6 +86,7 @@ class DataManager(object):
             newsSource.lookingAt(symbole, startDate, endDate, keywords)
             self.marketSource.addMarketStatusToNews(newsSource.news)
             self.news += newsSource.news
+            newsSource.clean()
         self.news = sorted(self.news, key=lambda x:x.pubDate)
         
     def __str__(self):
@@ -101,6 +102,9 @@ class NewsSource(object):
     Classe abstraite qui définit le contrat pour un fournisseur de news
     '''
     def __init__(self):
+        self.news = []
+        
+    def clean(self):
         self.news = []
     
     def lookingAt(self, symbole, startDate, endDate):
