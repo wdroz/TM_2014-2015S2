@@ -8,6 +8,7 @@ Created on Mon Mar  9 12:54:03 2015
 import requests
 import re
 import datetime
+import time
 import HTMLParser
 import pickle
 
@@ -30,7 +31,10 @@ class MarketStatus(object):
         self.market_high = float(market_high)
         self.market_low = float(market_low)
         self.market_close = float(market_close)
-        self.market_volume = int(market_volume)
+        try:
+            self.market_volume = int(market_volume)
+        except:
+            self.market_volume = None # this information isn't alway availlable
         
     def __str__(self):
         return 'Date %s,Open %f,High %f,Low %f,Close %f,Volume %d' % (self.market_date.strftime('%d-%m-%Y'), 
@@ -38,7 +42,7 @@ class MarketStatus(object):
                                                                       self.market_high,
                                                                       self.market_low,
                                                                       self.market_close,
-                                                                      self.market_volume)
+                                                                      self.market_volume if self.market_volume != None else 0)
 
 class News(object):
     '''
@@ -81,6 +85,11 @@ class DataManager(object):
     def load(self, filename):
         self.__dict__ = pickle.load(open(filename, "rb" ))
         
+    def lookingAll(self, symbole, keywords):
+        startDate = "2000-01-01"
+        endDate = time.strftime('%Y-%m-%d')
+        self.lookingAt(symbole, startDate, endDate, keywords)
+        
     def lookingAt(self, symbole, startDate, endDate, keywords):
         startDate = datetime.datetime.strptime(startDate, "%Y-%m-%d")
         endDate = datetime.datetime.strptime(endDate, "%Y-%m-%d")
@@ -110,6 +119,7 @@ class DataManager(object):
         myString = ''
         for new in self.news:
             myString += str(new) + '\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n'
+        myString += '\n%d News from %d sources' % (len(self.news), len(self.listNewsSource))
         return myString
     
 
@@ -188,7 +198,8 @@ class GoogleFinanceNewsSource(NewsSource):
                     date = datetime.datetime.strptime(dates[cpt], "%b %d, %Y")
                     self.news.append(News(pubDate=date, symbole=symbole, publication=quotes[cpt], pubSource=sources[cpt]))
                 except:
-                    print('some news has been lost...')
+                    MessageManager.debugMessage("new recent, ... set for today")
+                    self.news.append(News(pubDate=datetime.datetime.now(), symbole=symbole, publication=quotes[cpt], pubSource=sources[cpt]))
             params['start'] += self.num
             
 
@@ -199,25 +210,41 @@ class GoogleFinanceMarketSource(MarketSource):
     def __init__(self):
         MarketSource.__init__(self)
         self.url = 'https://www.google.com/finance/historical'
+        self.symboles = {}
+        print('symboles created')
+        
+    def requestForMarkets(self, symbole):
+        params = {'q' : symbole, 'startdate' : '2000-01-01', 'enddate' : time.strftime('%Y-%m-%d'), 'num' : 30, 'output' : 'csv'}
+        r = requests.get(self.url, params=params)
+        MessageManager.debugMessage("GoogleFinanceMarketSource : request")
+        return r.text.encode('utf-8').split('\n')
+        
+    def addIfNotExist(self, symbole):
+        if(not self.symboles.has_key(symbole)):
+            self.symboles[symbole] = self.requestForMarkets(symbole)   
     
     def addMarketStatusToNews(self, news):
         for new in news:
+            self.addIfNotExist(new.symbole)
             enddate = new.pubDate + datetime.timedelta(days=7)
-            params = {'q' : new.symbole, 'startdate' : new.pubDate.strftime('%Y-%m-%d'), 'enddate' : enddate.strftime('%Y-%m-%d'), 'num' : 30, 'output' : 'csv'}
-            r = requests.get(self.url, params=params)
-            MessageManager.debugMessage("GoogleFinanceMarketSource : request")
             isFirstLline=True
             new.marketStatus = []
-            for line in r.text.encode('utf-8').split('\n'):
+            for line in self.symboles[new.symbole]:
                 if(isFirstLline):
                     isFirstLline=False
                 else:
                     try:
                         date_m,open_m,high_m,low_m,close_m,volume_m = line.split(',')
                         date_m = datetime.datetime.strptime(date_m, "%d-%b-%y")
-                        new.marketStatus.append(MarketStatus(date_m,open_m,high_m,low_m,close_m,volume_m))
+                        if(date_m >= new.pubDate and date_m <= enddate):
+                            MessageManager.debugMessage("GoogleFinanceMarketSource : add marketStatus")
+                            for machin in [date_m,open_m,high_m,low_m,close_m,volume_m]:
+                                 MessageManager.debugMessage(str(machin))
+                            new.marketStatus.append(MarketStatus(date_m,open_m,high_m,low_m,close_m,volume_m))
+                            MessageManager.debugMessage("GoogleFinanceMarketSource : marketStatus added")
                     except:
                         pass # empty line
+                        MessageManager.debugMessage("GoogleFinanceMarketSource : exception")
             new.marketStatus = sorted(new.marketStatus, key=lambda x:x.market_date)[:3]
     
 class ReutersNewsSource(NewsSource):

@@ -28,7 +28,10 @@ if __name__ == "__main__":
     
     #print(str(rns))
     DataManager.MessageManager.DEBUG = True
-    dm = DataManager.DataManager.easyBuild()
-    dm.lookingAt('NASDAQ:GOOG','2000-01-01','2015-03-03', ['GOOG'])
-    dm.save('google.p')
+    dm = DataManager.DataManager.easyBuild(load=False, save=True)
+    dm.lookingAll('NASDAQ:GOOGL', ['GOOG'])
+    dm.lookingAll('SCMN.VX', ['SWISSCOM'])
+    dm.save('googleAndSwisscom.p')
+    #dm.load('google.p')    
     print(str(dm))
+    
