@@ -11,7 +11,7 @@ import re
 class Features(object):
     def __init__(self, news):
         self.news = news
-        self.publication = re.sub(r'[^A-Za-z1234567890.,$!'']', '', news.publication)    
+        self.publication = re.sub(r'[^A-Za-z1234567890.,$! '']', '', news.publication)    
         #TODO remove special chars
         self.textBlob = TextBlob(self.publication)
         self.polarity = self.textBlob.sentiment.polarity
@@ -38,6 +38,9 @@ class Features(object):
         
     def getVector(self):
         return [self.polarity, self.marketChangeEndToEnd] + self.marketChange
+        
+    def getPairforClassification(self):
+        return (self.publication, "pos" if self.isGood() else 'neg')
 
 class FeaturesManager(object):
     def __init__(self):
