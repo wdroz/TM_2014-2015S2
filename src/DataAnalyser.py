@@ -17,12 +17,13 @@ class DataAnalyzerLocal(object):
         self.nbFeatures = 0
     
     def addFeature(self, feature):
+        n = 1
         try:
-            if(feature.isDoubleCheckedN(0)):
+            if(feature.isDoubleCheckedN(n)):
                 self.nbDoubleChecked += 1
             self.features.append(feature)               
             self.polarities.append(feature.polarity)
-            self.endToEnd.append(feature.marketChange[0])
+            self.endToEnd.append(feature.marketChange[n])
             self.nbFeatures += 1
         except:
             pass # not market values
@@ -31,5 +32,8 @@ class DataAnalyzerLocal(object):
         correlation = float(self.nbDoubleChecked)/self.nbFeatures
         print('correlation : %f' % correlation)
         #plt.hist(array(self.endToEnd), bins=20)
-        plt.hist([array(self.endToEnd), array(self.polarities)], bins=2)
+        normalitedEndToEnd = [x*(1/0.15) for x in self.endToEnd]
+        plt.hist([array(normalitedEndToEnd), array(self.polarities)], bins=20)
+        plt.xlabel('relative change')
+        plt.ylabel('number of news')
         plt.show()
