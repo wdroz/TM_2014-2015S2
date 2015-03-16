@@ -34,7 +34,7 @@ class ReutersNewsSource(NewsSource):
                 if(date >= startDate and date <= endDate):
                     head = lines[1]
                     msg = ''.join(lines[2:])
-                    if(self.hasAnyofTheresKeywords(upperKeywords, head) or self.hasAnyofTheresKeywords(upperKeywords, msg)):
+                    if(self.hasAnyofTheresKeywords(upperKeywords, head.upper()) or self.hasAnyofTheresKeywords(upperKeywords, msg.upper())):
                         MessageManager.debugMessage("ReutersNewsSource : head or msg has keywords")
                         self.news.append(News(pubDate=date, symbole=symbole, publication=head, pubSource="Reuters"))
             except:

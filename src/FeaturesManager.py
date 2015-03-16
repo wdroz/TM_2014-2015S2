@@ -30,6 +30,12 @@ class Features(object):
         except:
             pass # empty
             
+    def isDoubleChecked(self):
+        return self.isGood() and (self.polarity > 0)            
+        
+    def isDoubleCheckedN(self, n):
+        return (self.polarity > 0) and (self.marketChange[n] > 0)
+            
     def isGood(self):
         return self.marketChangeEndToEnd > 0.0
         

@@ -17,7 +17,7 @@ def easyBuildDataManager(load=False, save=True):
     else:
         gfns = GoogleFinanceNewsSource()
         gfms = GoogleFinanceMarketSource()
-        rns = ReutersNewsSource('/media/droz/KIKOOLOL HDD/Corpus/headlines-docs.csv')
+        rns = ReutersNewsSource('/home/droz/corpus/headlines-docs.csv')
         dm.addNewsSource(gfns)
         dm.addNewsSource(rns)
         dm.setMarketSource(gfms)

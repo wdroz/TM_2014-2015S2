@@ -10,6 +10,7 @@ from os import listdir
 from os.path import isfile, join
 from random import shuffle
 from textblob.classifiers import NaiveBayesClassifier
+from DataAnalyser import DataAnalyzerLocal
 
 from pyspark import SparkContext
 from FeaturesManager import Features
@@ -21,11 +22,16 @@ def decode(x):
     return news
     
 if __name__ == "__main__":
-    path = '/media/droz/KIKOOLOL HDD/Corpus/pickle/'
+    path = '/home/droz/data/'
     sc = SparkContext()
     onlyfiles = [ join(path,f) for f in listdir(path) if isfile(join(path,f)) ]
     newsRDD = sc.parallelize(onlyfiles).map(decode)
-    FeaturesRdd = newsRDD.map(lambda x: Features(x))
+    featuresRdd = newsRDD.map(lambda x: Features(x))
+    dataAnalyser = DataAnalyzerLocal()
+    #featuresRdd.foreach(lambda x: dataAnalyser.addFeature(x))
+    [dataAnalyser.addFeature(x) for x in featuresRdd.collect()]    
+    dataAnalyser.plot()
+    '''
     
     nbGood = 0
     nbBad = 0
@@ -39,6 +45,7 @@ if __name__ == "__main__":
     cl = NaiveBayesClassifier(train)
     accuracy = cl.accuracy(test)
     print('accuracy : %f' % accuracy)
+    '''
     '''
     for feature in  filteredFeaturesRDD.collect():
         print(feature)
