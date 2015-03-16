@@ -29,8 +29,11 @@ if __name__ == "__main__":
     featuresRdd = newsRDD.map(lambda x: Features(x))
     dataAnalyser = DataAnalyzerLocal()
     #featuresRdd.foreach(lambda x: dataAnalyser.addFeature(x))
-    [dataAnalyser.addFeature(x) for x in featuresRdd.collect()]    
+    f = featuresRdd.collect()
+    [dataAnalyser.addFeature(x) for x in f]    
     dataAnalyser.plot()
+    for x in f:
+        print(str(x))
     '''
     
     nbGood = 0
