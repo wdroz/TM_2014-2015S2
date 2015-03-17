@@ -33,7 +33,7 @@ class DataAnalyzerLocal(object):
         print('correlation : %f' % correlation)
         #plt.hist(array(self.endToEnd), bins=20)
         normalitedEndToEnd = [x*(1/0.15) for x in self.endToEnd]
-        plt.hist([array(normalitedEndToEnd), array(self.polarities)], bins=20)
+        plt.hist([array(normalitedEndToEnd), array(self.polarities)], bins=2)
         plt.xlabel('relative change')
         plt.ylabel('number of news')
         plt.show()
