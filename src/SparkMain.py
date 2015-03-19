@@ -18,6 +18,7 @@ from DataClassifier import DataClassifier
 from pyspark import SparkContext, SparkConf
 from FeaturesManager import Features
 from DataManager import News
+from pyspark.mllib.classification import SVMWithSGD
 
 from ast import literal_eval
 from pyspark.mllib.regression import LabeledPoint
@@ -27,48 +28,31 @@ def decode(x):
     news.__dict__ = pickle.load(open(x, 'r'))
     return news
     
+def useDataClassifier(filepath='/media/droz/KIKOOLOL HDD/Corpus/dataset/dataset.txt', sc=None):
+    MessageManager.debugMessage("useDataClassifier : start open file %s" % filepath)
+    lines = sc.textFile(filepath)
+    fullDataSet = lines.map(lambda line: literal_eval(line)).map(lambda (data,label): LabeledPoint((1 if label else 0), data))
+    #fullDataSet = sc.parallelize(fullDataSet)
+    dc = DataClassifier(fullDataSet, SVMWithSGD)
+    MessageManager.debugMessage("useDataClassifier : start crossvalidation")
+    precMin, precMax, prec = dc.crossvalidation(5)
+    print('min : %f, max : %f, mean : %f' % (precMin, precMax, prec))
+    
 def classification(filepath='/media/droz/KIKOOLOL HDD/Corpus/dataset/dataset.txt', sc=None):
-    labelledPoints = []
     MessageManager.debugMessage("classification : start open file %s" % filepath)
-    nb_max_cheat = 1500
-    cpt=0
-    with open(filepath, 'r') as f:
-        for line in f:
-            cpt += 1
-            myTuple = literal_eval(line)
-            labelledPoints.append(LabeledPoint((1 if myTuple[1] else 0), myTuple[0]))
-            if(cpt >= nb_max_cheat): # cheat because fuck memory
-                break
-    MessageManager.debugMessage("classification : start shuffle")
-    shuffle(labelledPoints)    
-    MessageManager.debugMessage("classification : close file %s" % filepath)    
-    nbRec = len(labelledPoints)
+    lines = sc.textFile(filepath)
+    fullDataSet = lines.map(lambda line: literal_eval(line)).map(lambda (data,label): LabeledPoint((1 if label else 0), data)).cache()
     MessageManager.debugMessage("classification : start split dataset")
-    train = labelledPoints[:int(0.8*nbRec)]
-    MessageManager.debugMessage("classification : train set len : %d" % len(train))
-    test = labelledPoints[int(0.8*nbRec):]
-    MessageManager.debugMessage("classification : test set len : %d" % len(test))
-    trainRdd = sc.parallelize(train)
-    testRdd = sc.parallelize(test)
+    trainRdd, testRdd = fullDataSet.randomSplit([80,20], 17)
     dc = DataClassifier()
     MessageManager.debugMessage("classification : start training")
     dc.train(trainRdd)
     MessageManager.debugMessage("classification : stop training")
     MessageManager.debugMessage("classification : start prediction")
     evaluatorRdd = testRdd.map(lambda p: (p.label, dc.predict(p.features)))
-    nbOK = evaluatorRdd.filter(lambda (vrai, predict): vrai == predict).count()
+    nbOK = evaluatorRdd.filter(lambda (a, b): a == b).count()
     nbTOT = testRdd.count()
     precision = nbOK/float(nbTOT)
-    '''
-    for p in test:
-        res = dc.predict(p.features)
-        if(res == p.label):
-            nbOK += 1
-        else:
-            nbKO += 1
-    MessageManager.debugMessage("classification : stop prediction")
-    precision = nbOK/float(nbKO + nbOK)
-    '''
     print('precision : %f' % precision)
     
     
@@ -82,8 +66,8 @@ if __name__ == "__main__":
     #featuresRdd = newsRDD.map(lambda x: Features(x))
     #ttv = TextToVectSpark(1)
     #res = ttv.vectorize(featuresRdd)
-    classification(sc=sc)
-            
+    #classification(sc=sc)
+    useDataClassifier(sc=sc)     
     
     #for x in res:
     #    print('vector len : %d, %s' % (x[0], str(x[1])))
