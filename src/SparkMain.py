@@ -30,7 +30,7 @@ def decode(x):
 def classification(filepath='/media/droz/KIKOOLOL HDD/Corpus/dataset/dataset.txt', sc=None):
     labelledPoints = []
     MessageManager.debugMessage("classification : start open file %s" % filepath)
-    nb_max_cheat = 500
+    nb_max_cheat = 1500
     cpt=0
     with open(filepath, 'r') as f:
         for line in f:
@@ -49,14 +49,17 @@ def classification(filepath='/media/droz/KIKOOLOL HDD/Corpus/dataset/dataset.txt
     test = labelledPoints[int(0.8*nbRec):]
     MessageManager.debugMessage("classification : test set len : %d" % len(test))
     trainRdd = sc.parallelize(train)
-    #testRdd = sc.parallelize(test)
+    testRdd = sc.parallelize(test)
     dc = DataClassifier()
     MessageManager.debugMessage("classification : start training")
     dc.train(trainRdd)
     MessageManager.debugMessage("classification : stop training")
-    nbOK = 0
-    nbKO = 0
     MessageManager.debugMessage("classification : start prediction")
+    evaluatorRdd = testRdd.map(lambda p: (p.label, dc.predict(p.features)))
+    nbOK = evaluatorRdd.filter(lambda (vrai, predict): vrai == predict).count()
+    nbTOT = testRdd.count()
+    precision = nbOK/float(nbTOT)
+    '''
     for p in test:
         res = dc.predict(p.features)
         if(res == p.label):
@@ -65,6 +68,7 @@ def classification(filepath='/media/droz/KIKOOLOL HDD/Corpus/dataset/dataset.txt
             nbKO += 1
     MessageManager.debugMessage("classification : stop prediction")
     precision = nbOK/float(nbKO + nbOK)
+    '''
     print('precision : %f' % precision)
     
     
