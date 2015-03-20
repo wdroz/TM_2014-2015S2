@@ -10,6 +10,9 @@ from numpy import mean
 from MessageManager import MessageManager
 
 class DataClassifier(object):
+    '''
+    Classe qui permet de classifier des données à l'aide d'un classifier
+    '''
     def __init__(self, dataset, classifier):
         self.dataset = dataset
         self.classifier = classifier
