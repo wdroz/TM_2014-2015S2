@@ -1,0 +1,12 @@
+#!/usr/bin/expect -f
+set timeout -1
+
+set arg1 [lindex $argv 0]
+set arg2 [lindex $argv 1]
+set arg3 [lindex $argv 2]
+spawn ssh $arg1@$arg2
+expect { 
+    -regexp " $" { send "$arg3\n" }
+}
+expect -regexp " $"
+send "exit\n"
