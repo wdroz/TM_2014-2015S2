@@ -6,17 +6,10 @@ Created on Wed Mar 11 13:52:45 2015
 """
 
 import pickle
-from os import listdir
-from os.path import isfile, join
-from random import shuffle
-from textblob.classifiers import NaiveBayesClassifier
-from DataAnalyser import DataAnalyzerLocal
-from TextToVect import TextToVectSpark
 from MessageManager import MessageManager
 from DataClassifier import DataClassifier
 
 from pyspark import SparkContext, SparkConf
-from FeaturesManager import Features
 from DataManager import News
 from pyspark.mllib.classification import SVMWithSGD
 
@@ -32,6 +25,7 @@ def useDataClassifier(filepath='/media/droz/KIKOOLOL HDD/Corpus/dataset/dataset.
     MessageManager.debugMessage("useDataClassifier : start open file %s" % filepath)
     lines = sc.textFile(filepath)
     fullDataSet = lines.map(lambda line: literal_eval(line)).map(lambda (data,label): LabeledPoint((1 if label else 0), data))
+    fullDataSet.cache()
     #fullDataSet = sc.parallelize(fullDataSet)
     dc = DataClassifier(fullDataSet, SVMWithSGD)
     MessageManager.debugMessage("useDataClassifier : start crossvalidation")
@@ -67,7 +61,7 @@ if __name__ == "__main__":
     #ttv = TextToVectSpark(1)
     #res = ttv.vectorize(featuresRdd)
     #classification(sc=sc)
-    useDataClassifier(sc=sc)     
+    useDataClassifier(filepath='hdfs://157.26.83.52/user/wdroz/dataset.txt', sc=sc)     
     
     #for x in res:
     #    print('vector len : %d, %s' % (x[0], str(x[1])))
