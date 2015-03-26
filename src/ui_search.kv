@@ -1,0 +1,52 @@
+# File name: ui_search.kv
+
+<DeleteButton>:
+    source: '../images/del.png'
+
+<SearchField>:
+    txtSymbol: symbol
+    txtKeywords: keywords
+    Label:
+        id: symbol
+    Label:
+        id: keywords
+    DeleteButton:
+        id: del
+        on_press: root.delete_me()
+
+<MySearchUI>:
+    btnStart: start
+    btnAdd: add
+    txtSymbol: symbol
+    txtKeywords: keywords
+    lyListOfSearch: listOfSearch
+    BoxLayout:
+        orientation: 'horizontal'
+        BoxLayout:
+            orientation: 'vertical'
+            BoxLayout:
+                id: listOfSearch
+                orientation: 'vertical'
+            BoxLayout:
+                orientation: 'horizontal'
+                BoxLayout:
+                    orientation: 'vertical'
+                    Label:
+                        text: 'SYMBOL'
+                    TextInput:
+                        id: symbol
+                        multiline: False
+                BoxLayout:
+                    orientation: 'vertical'
+                    Label:
+                        text: 'KEYWORDS'
+                    TextInput:
+                        id: keywords
+                        multiline: False
+                Button:
+                    id: add
+                    text: 'add'
+                    on_press: root.add_search()
+        Button:
+            id: start
+            text: 'start'
