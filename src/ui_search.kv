@@ -20,6 +20,7 @@
     txtSymbol: symbol
     txtKeywords: keywords
     lyListOfSearch: listOfSearch
+    progress: pb
     BoxLayout:
         orientation: 'horizontal'
         BoxLayout:
@@ -27,10 +28,12 @@
             BoxLayout:
                 id: listOfSearch
                 orientation: 'vertical'
+                size_hint: 1,0.2
             BoxLayout:
                 orientation: 'horizontal'
                 BoxLayout:
                     orientation: 'vertical'
+                    size_hint: 1,0.2
                     Label:
                         text: 'SYMBOL'
                     TextInput:
@@ -38,16 +41,26 @@
                         multiline: False
                 BoxLayout:
                     orientation: 'vertical'
+                    size_hint: 1,0.2
                     Label:
                         text: 'KEYWORDS'
                     TextInput:
                         id: keywords
                         multiline: False
-                Button:
-                    id: add
-                    text: 'add'
-                    on_press: root.add_search()
-                Button:
-                    id: start
-                    text: 'start'
-                    on_press: root.start()
+                BoxLayout:
+                    oritentation: 'vertical'
+                    size_hint: 1,0.2
+                    BoxLayout:
+                        orientation: 'horizontal'
+                        Button:
+                            id: add
+                            text: 'add'
+                            on_press: root.add_search()
+                        Button:
+                            id: start
+                            text: 'start'
+                            on_press: root.start()
+            ProgressBar:
+                size_hint: 1,0.2
+                id: pb
+                max: 100

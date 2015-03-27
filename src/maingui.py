@@ -39,6 +39,7 @@ class MySearchUI(BoxLayout):
         
     def start(self):
         self.saveToFile(self.filepath)
+        self.progress.value=100
         
     def loadFromFile(self,filepath):
         with open(self.filepath, 'r') as f:
