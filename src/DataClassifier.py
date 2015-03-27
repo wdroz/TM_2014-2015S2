@@ -8,6 +8,7 @@ Created on Tue Mar 17 10:07:02 2015
 import random
 from numpy import mean
 from MessageManager import MessageManager
+import pickle
 
 class DataClassifier(object):
     '''
@@ -17,6 +18,7 @@ class DataClassifier(object):
         self.dataset = dataset
         self.classifier = classifier
         self.model = None
+        self.modelpath='model.p'
         
     def _giveTrainAndtest(self, rdds, nb):
         middle = rdds[nb] 
@@ -47,7 +49,7 @@ class DataClassifier(object):
         aSplit = [1 for x in range(0,nbSplits)]
         rdds = self.dataset.randomSplit(aSplit,random.randint(1,100000))
         for cpt in range(0, nbSplits):
-            MessageManager.debugMessage("DataClassifier : start new cross-validation iteration")
+            MessageManager.debugMessage("DataClassifier : start new cross-validation iteration %d/%d" % (cpt, nbSplits))
             trainSet ,testSet = self._giveTrainAndtest(rdds, cpt)
             print('trainset size : %d' % trainSet.count())
             print('testset size : %d' % testSet.count())
@@ -73,5 +75,13 @@ class DataClassifier(object):
     
     def predict(self, feature):
         return self.model.predict(feature)
+        
+    def saveModel(self):
+        MessageManager.debugMessage("DataClassifier : Save Model")
+        pickle.dump(self.model, open(self.modelpath, 'wb'))
+    
+    def loadModel(self):
+        MessageManager.debugMessage("DataClassifier : Load Model")
+        self.model = pickle.load(open(self.modelpath, 'rb'))
         
         

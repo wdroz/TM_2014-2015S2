@@ -20,6 +20,11 @@ def decode(x):
     news = News()
     news.__dict__ = pickle.load(open(x, 'r'))
     return news
+
+def reUseDataClassifier():
+    dc = DataClassifier(None, SVMWithSGD)
+    dc.loadModel()
+
     
 def useDataClassifier(filepath='/media/droz/KIKOOLOL HDD/Corpus/dataset/dataset.txt', sc=None):
     MessageManager.debugMessage("useDataClassifier : start open file %s" % filepath)
@@ -31,6 +36,9 @@ def useDataClassifier(filepath='/media/droz/KIKOOLOL HDD/Corpus/dataset/dataset.
     MessageManager.debugMessage("useDataClassifier : start crossvalidation")
     precMin, precMax, prec = dc.crossvalidation(5)
     print('min : %f, max : %f, mean : %f' % (precMin, precMax, prec))
+    MessageManager.debugMessage("useDataClassifier : train full dataset")
+    dc.train(fullDataSet)
+    dc.saveModel()
     
 def classification(filepath='/media/droz/KIKOOLOL HDD/Corpus/dataset/dataset.txt', sc=None):
     MessageManager.debugMessage("classification : start open file %s" % filepath)
