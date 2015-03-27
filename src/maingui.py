@@ -13,6 +13,10 @@ from kivy.uix.label import Label
 from kivy.uix.image import Image
 from kivy.uix.behaviors import ButtonBehavior
 from ast import literal_eval
+from MessageManager import MessageManager
+from ToolsTM import easyBuildDataManager
+from DataWritter import DataWritter
+import pickle
 Builder.load_file('ui_search.kv')
 
 class DeleteButton(ButtonBehavior, Image):
@@ -39,6 +43,16 @@ class MySearchUI(BoxLayout):
         
     def start(self):
         self.saveToFile(self.filepath)
+        dm = easyBuildDataManager(load=False, save=True)
+        nbLooking = len(self.dicoList)
+        cpt=0
+        for dico in self.dicoList:
+            dm.lookingAll(dico['symbol'], dico['keywords'])
+            cpt+=1
+            self.progress.value=int(cpt/float(nbLooking)*100)
+        dm.save('dataset.p')
+        #dm.load('dataset.p')    
+        dm.saveNewsWithDataWritter(DataWritter('/home/droz/data/', pickle.dump))
         self.progress.value=100
         
     def loadFromFile(self,filepath):
