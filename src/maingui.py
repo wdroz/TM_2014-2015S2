@@ -95,5 +95,6 @@ class MySearchUI(BoxLayout):
 class TestApp(App):
     def build(self):
         return MySearchUI()
-        
-TestApp().run()
+
+if __name__ == "__main__":        
+    TestApp().run()

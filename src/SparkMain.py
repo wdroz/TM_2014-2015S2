@@ -35,10 +35,11 @@ def useDataClassifier(filepath='/media/droz/KIKOOLOL HDD/Corpus/dataset/dataset.
     dc = DataClassifier(fullDataSet, SVMWithSGD)
     MessageManager.debugMessage("useDataClassifier : start crossvalidation")
     precMin, precMax, prec = dc.crossvalidation(5)
-    print('min : %f, max : %f, mean : %f' % (precMin, precMax, prec))
+    
     MessageManager.debugMessage("useDataClassifier : train full dataset")
     dc.train(fullDataSet)
     dc.saveModel()
+    print('min : %f, max : %f, mean : %f' % (precMin, precMax, prec))
     
 def classification(filepath='/media/droz/KIKOOLOL HDD/Corpus/dataset/dataset.txt', sc=None):
     MessageManager.debugMessage("classification : start open file %s" % filepath)
