@@ -37,8 +37,8 @@ if __name__ == "__main__":
     sc = SparkContext(appName="PythonStreaming")
     ssc = StreamingContext(sc, 30)
     
-    #streamPath = 'hdfs://157.26.83.52/user/wdroz/stream'    
-    streamPath = '/tmp/stream'    
+    streamPath = 'hdfs://157.26.83.52/user/wdroz/stream'    
+    #streamPath = '/tmp/stream'    
     '''
     Data each line is {text : 'bla bla bla', source : 'bla bla', date : '2015-30-03 08:53:00'}
     '''

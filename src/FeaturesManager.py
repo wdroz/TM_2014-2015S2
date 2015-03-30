@@ -5,8 +5,53 @@ Created on Wed Mar 11 15:46:45 2015
 @author: droz
 """
 
-from textblob import TextBlob
+from textblob import TextBlob, Word
 import re
+
+class FeaturesV2(object):
+    def __init__(self, news):
+        self.news = news
+        self.publication = re.sub(r'[^A-Za-z.,$! '']', '', news.publication)    
+        self.textBlob = self.textblobLemma(TextBlob(self.publication))
+        self.polarity = self.textBlob.sentiment.polarity
+        self.processMarketStatus()
+        self.bg2 = self.processBigram(2)
+        self.bg3 = self.processBigram(3)
+        
+    def textblobLemma(self, tb):
+        myTab = []
+        for w in tb.words:
+            myWord = Word(str(w.lemma))
+            myWord = Word(str(myWord.lemmatize('v')).upper())
+            myTab.append(myWord)
+        return TextBlob(' '.join(myTab))
+    
+    def processMarketStatus(self):
+        self.marketChange = []
+        self.marketChangeEndToEnd = 0
+        for marketStatus in self.news.marketStatus:
+            deltaMarket = marketStatus.market_close-marketStatus.market_open
+            self.marketChange.append(float(deltaMarket)/marketStatus.market_open)     
+            
+        try:
+            deltaMarket = self.news.marketStatus[-1].market_close-self.news.marketStatus[0].market_open
+            self.marketChangeEndToEnd = float(deltaMarket)/self.news.marketStatus[0].market_open
+        except:
+            pass # empty
+            
+    def processBigram(self, n=2):
+        return self.textBlob.ngrams(n)
+    
+    def processVectorization(self, vectTextBase, vectBGBase):
+        myVect = []
+        for v in vectTextBase:
+            myVect.append(int(v in self.textBlob.words))
+            
+        for bg in vectBGBase:
+            myVect.append(int(bg in self.bg))
+            
+    def textTransform(self, text):
+        return text.upp()
 
 class Features(object):
     def __init__(self, news):
