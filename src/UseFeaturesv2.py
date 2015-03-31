@@ -9,6 +9,7 @@ from DataManager import MarketStatus
 from FeaturesManager import FeaturesV2
 from random import randint
 import time
+from pyspark import SparkContext
 
 def createRandomNews():
     pList = ['I am the one who knocks',
@@ -32,12 +33,17 @@ def createRandomNews():
     return News(pubDate=date, symbole='NASDAQ:GOOGL', publication=txt, pubSource='Reuteurs', marketStatus=[m1,m2,m3])
 
 if __name__ == "__main__":
-    news1 = createRandomNews()
-    news2 = createRandomNews()
-    news3 = createRandomNews()
+    allNews = [createRandomNews() for x in range(10000)]
+    sc = SparkContext()
+    newsRDD = sc.parallelize(allNews)
+    featuresRDD = newsRDD.map(lambda x: FeaturesV2(x))
+    allBg2 = featuresRDD.map(lambda x: list(x.bg2)).reduce(lambda a,b : a+b)
+    allBg3 = featuresRDD.map(lambda x: list(x.bg3)).reduce(lambda a,b : a+b)
+    setAllBg2 = set(allBg2)
+    setAllBg3 = set(allBg3)
+    print('size of setAllBg2 : %d' % len(setAllBg2))
+    print('size of setAllBg3 : %d' % len(setAllBg3))
     
-    allNews = [news1, news2, news3]
-    
-    for myNews in allNews:
-        toto = FeaturesV2(myNews)
-        print(str(toto.bg3))
+    allBg2Flat = featuresRDD.flatMap(lambda x: list(x.bg2))
+    allBg2FlatUnique = allBg2Flat.intersection(allBg2Flat).collect()
+    print('size of allBg2FlatUnique %d' % len(allBg2FlatUnique))    

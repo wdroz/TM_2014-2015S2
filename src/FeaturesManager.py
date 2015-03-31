@@ -40,7 +40,7 @@ class FeaturesV2(object):
             pass # empty
             
     def processBigram(self, n=2):
-        return self.textBlob.ngrams(n)
+        return [tuple(x) for x in self.textBlob.ngrams(n)]
     
     def processVectorization(self, vectTextBase, vectBGBase):
         myVect = []
