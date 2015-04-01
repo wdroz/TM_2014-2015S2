@@ -10,6 +10,11 @@ from FeaturesManager import FeaturesV2
 from random import randint
 import datetime
 from pyspark import SparkContext
+from pyspark.mllib.regression import LabeledPoint
+from MessageManager import MessageManager
+from DataClassifier import DataClassifier
+from pyspark.mllib.classification import SVMWithSGD
+
 
 class DataSetMaker(object):
     def __init__(self):
@@ -17,23 +22,25 @@ class DataSetMaker(object):
         
     def process(self, newsRDD):
         self.newsRDD = newsRDD
-        self.featuresRDD = newsRDD.map(lambda x: FeaturesV2(x)).distinct()
+        self.featuresRDD = newsRDD.map(lambda x: FeaturesV2(x)).distinct().cache()
 
         allWordsFlat = self.featuresRDD.flatMap(lambda x: list(x.words))
-        self.allWordsFlatUnique = allWordsFlat.distinct().sortBy(lambda x: x)
+        self.allWordsFlatUnique = allWordsFlat.distinct().sortBy(lambda x: x).cache()
         
         allBg2Flat = self.featuresRDD.flatMap(lambda x: list(x.bg2))
-        self.allBg2FlatUnique = allBg2Flat.distinct().sortBy(lambda x: x)
+        self.allBg2FlatUnique = allBg2Flat.distinct().sortBy(lambda x: x).cache()
         
         #print(str(self.allWordsFlatUnique.collect()))
         
     def vectorize(self):
         self.indexFeatures = self.featuresRDD.zipWithIndex()
+        self.indexFeaturesReverse = self.indexFeatures.map(lambda x: (x[1], x[0]))
         self.indexWords = self.allWordsFlatUnique.zipWithIndex()
         self.indexBg2 = self.allBg2FlatUnique.zipWithIndex()
         
 
         featuresCrossWords = self.indexFeatures.cartesian(self.indexWords)
+        featuresCrossBG2 = self.indexFeatures.cartesian(self.indexBg2)
         # ((features, 1), ('toto', 5))
         # x[0][0] = features
         # x[0][1] = features id
@@ -41,9 +48,19 @@ class DataSetMaker(object):
         # x[1][1] = word id
         # (1, (5, 0))
         vectFlatFeaturesXWords = featuresCrossWords.map(lambda x: (x[0][1], (x[1][1], 1 if x[1][0] in x[0][0].words else 0)))
+        vectFlatFeaturesXBG2 = featuresCrossBG2.map(lambda x: (x[0][1], (x[1][1], 1 if x[1][0] in x[0][0].bg2 else 0)))
+        
         vectGroupedFeaturesXWords = vectFlatFeaturesXWords.groupByKey()
-        for i in vectGroupedFeaturesXWords.collect():
-            print(str(i))
+        vectGroupedFeaturesXBG2 = vectFlatFeaturesXBG2.groupByKey()
+
+        featuresOfWords = vectGroupedFeaturesXWords.mapValues(lambda x: [a[1] for a in sorted(x, key=lambda b: b[0])])
+            
+        featuresOfBG2 = vectGroupedFeaturesXBG2.mapValues(lambda x: [a[1] for a in sorted(x, key=lambda b: b[0])])
+        
+        self.labelPointsRdd = featuresOfWords.union(featuresOfBG2).reduceByKey(lambda a,b: a+b).join(self.indexFeaturesReverse).mapValues(lambda x: LabeledPoint(x[1].isGood(), x[0])).values()
+        
+        return self.labelPointsRdd
+       
         #print(str(self.indexBg2.collect()))
         
 
@@ -69,12 +86,17 @@ def createRandomNews():
     return News(pubDate=date, symbole='NASDAQ:GOOGL', publication=txt, pubSource='Reuteurs', marketStatus=[m1,m2,m3])
 
 if __name__ == "__main__":
-    allNews = [createRandomNews() for x in range(10000)]
+    allNews = [createRandomNews() for x in range(30)]
     sc = SparkContext()
     newsRDD = sc.parallelize(allNews).distinct()
     dataSetMaker = DataSetMaker()
     dataSetMaker.process(newsRDD)
-    dataSetMaker.vectorize()
+    fullDataSet = dataSetMaker.vectorize()
+    fullDataSet.cache()
+    dc = DataClassifier(fullDataSet, SVMWithSGD)
+    MessageManager.debugMessage("main : start crossvalidation")
+    precMin, precMax, prec = dc.crossvalidation(5)
+    print('min : %f, max : %f, mean : %f' % (precMin, precMax, prec))
     '''
     featuresRDD = newsRDD.map(lambda x: FeaturesV2(x))
     allBg2 = featuresRDD.map(lambda x: list(x.bg2)).reduce(lambda a,b : a+b)

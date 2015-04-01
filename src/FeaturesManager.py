@@ -59,6 +59,9 @@ class FeaturesV2(object):
             
     def textTransform(self, text):
         return text.upp()
+        
+    def isGood(self):
+        return self.marketChangeEndToEnd > 0.0
 
 class Features(object):
     def __init__(self, news):
