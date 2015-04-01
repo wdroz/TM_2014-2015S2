@@ -54,6 +54,9 @@ class News(object):
         for marketStatus in self.marketStatus:
             myString += '\t' + str(marketStatus) + '\n'
         return myString
+        
+    def __hash__(self):
+        return str(self).__hash__()
 
 class DataManager(object):
     '''

@@ -17,6 +17,7 @@ class FeaturesV2(object):
         self.processMarketStatus()
         self.bg2 = self.processBigram(2)
         self.bg3 = self.processBigram(3)
+        self.words = self.processWords()
         
     def textblobLemma(self, tb):
         myTab = []
@@ -25,6 +26,9 @@ class FeaturesV2(object):
             myWord = Word(str(myWord.lemmatize('v')).upper())
             myTab.append(myWord)
         return TextBlob(' '.join(myTab))
+        
+    def __hash__(self):
+        return self.news.__hash__()
     
     def processMarketStatus(self):
         self.marketChange = []
@@ -38,6 +42,9 @@ class FeaturesV2(object):
             self.marketChangeEndToEnd = float(deltaMarket)/self.news.marketStatus[0].market_open
         except:
             pass # empty
+            
+    def processWords(self):
+        return [x for x in self.textBlob.words]
             
     def processBigram(self, n=2):
         return [tuple(x) for x in self.textBlob.ngrams(n)]
