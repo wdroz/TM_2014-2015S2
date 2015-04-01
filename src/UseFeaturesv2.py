@@ -4,6 +4,10 @@ Created on Mon Mar 30 14:48:06 2015
 
 @author: droz
 """
+import os
+os.environ['HOME'] = '/tmp'
+os.environ['SPARK_WORKER_DIR'] = '/tmp'
+
 from DataManager import News
 from DataManager import MarketStatus
 from FeaturesManager import FeaturesV2
@@ -25,10 +29,10 @@ class DataSetMaker(object):
         self.featuresRDD = newsRDD.map(lambda x: FeaturesV2(x)).distinct().cache()
 
         allWordsFlat = self.featuresRDD.flatMap(lambda x: list(x.words))
-        self.allWordsFlatUnique = allWordsFlat.distinct().sortBy(lambda x: x).cache()
+        self.allWordsFlatUnique = allWordsFlat.distinct().sortBy(lambda x: x)
         
         allBg2Flat = self.featuresRDD.flatMap(lambda x: list(x.bg2))
-        self.allBg2FlatUnique = allBg2Flat.distinct().sortBy(lambda x: x).cache()
+        self.allBg2FlatUnique = allBg2Flat.distinct().sortBy(lambda x: x)
         
         #print(str(self.allWordsFlatUnique.collect()))
         

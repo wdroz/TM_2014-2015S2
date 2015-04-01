@@ -4,28 +4,32 @@ Created on Wed Mar 11 15:46:45 2015
 
 @author: droz
 """
-
+import os
+os.environ['HOME'] = '/tmp'
+os.environ['SPARK_WORKER_DIR'] = '/tmp'
 from textblob import TextBlob, Word
 import re
 
 class FeaturesV2(object):
     def __init__(self, news):
         self.news = news
-        self.publication = re.sub(r'[^A-Za-z.,$! '']', '', news.publication)    
+        #self.publication = re.sub(r'[^A-Za-z.,$! '']', '', news.publication)
+        self.publication = re.sub(r'[^A-Za-z$! '']', '', news.publication)    
         self.textBlob = self.textblobLemma(TextBlob(self.publication))
         self.polarity = self.textBlob.sentiment.polarity
         self.processMarketStatus()
-        self.bg2 = self.processBigram(2)
-        self.bg3 = self.processBigram(3)
         self.words = self.processWords()
+        self.bg2 = self.processBigram(2)
+        #self.bg3 = self.processBigram(3)
         
     def textblobLemma(self, tb):
-        myTab = []
-        for w in tb.words:
-            myWord = Word(str(w.lemma))
-            myWord = Word(str(myWord.lemmatize('v')).upper())
-            myTab.append(myWord)
-        return TextBlob(' '.join(myTab))
+        #myTab = []
+        #for w in tb.words:
+        #    myWord = Word(str(w.lemma))
+        #    myWord = Word(str(myWord.lemmatize('v')).upper())
+        #    myTab.append(myWord)
+        #return TextBlob(' '.join(myTab))
+        return tb
         
     def __hash__(self):
         return self.news.__hash__()
@@ -44,10 +48,18 @@ class FeaturesV2(object):
             pass # empty
             
     def processWords(self):
-        return [x for x in self.textBlob.words]
+        #return [x for x in self.textBlob.words]
+        return self.publication.split(' ')
             
     def processBigram(self, n=2):
-        return [tuple(x) for x in self.textBlob.ngrams(n)]
+        tab = []
+        for x in range(len(self.words)-n):
+            subTab = []
+            for y in range(n):
+                subTab.append(self.words[x+y])
+            tab.append(tuple(subTab))
+        return tab
+        #return [tuple(x) for x in self.textBlob.ngrams(n)]
     
     def processVectorization(self, vectTextBase, vectBGBase):
         myVect = []
