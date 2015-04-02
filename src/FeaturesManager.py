@@ -14,7 +14,7 @@ class FeaturesV2(object):
     def __init__(self, news):
         self.news = news
         #self.publication = re.sub(r'[^A-Za-z.,$! '']', '', news.publication)
-        self.publication = re.sub(r'[^A-Za-z$! '']', '', news.publication)    
+        self.publication = re.sub(r'[^A-Za-z$! '']', '', news.publication).upper()
         self.textBlob = self.textblobLemma(TextBlob(self.publication))
         self.polarity = self.textBlob.sentiment.polarity
         self.processMarketStatus()
