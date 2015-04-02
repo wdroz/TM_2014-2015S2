@@ -23,7 +23,7 @@ class DataClassifier(object):
     def _giveTrainAndtest(self, rdds, nb):
         middle = rdds[nb] 
         leftPart = rdds[0:nb]
-        rightPart = rdds[nb:]
+        rightPart = rdds[nb+1:]
         left = None
         right = None
         if(leftPart != []):
