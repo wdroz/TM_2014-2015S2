@@ -4,10 +4,11 @@ Created on Mon Mar 30 14:48:06 2015
 
 @author: droz
 """
+'''
 import os
 os.environ['HOME'] = '/tmp'
 os.environ['SPARK_WORKER_DIR'] = '/tmp'
-
+'''
 from DataManager import News
 from DataManager import MarketStatus
 from FeaturesManager import FeaturesV2
@@ -26,7 +27,7 @@ class DataSetMaker(object):
         
     def process(self, newsRDD):
         self.newsRDD = newsRDD
-        self.featuresRDD = newsRDD.map(lambda x: FeaturesV2(x)).distinct().cache()
+        self.featuresRDD = newsRDD.map(lambda x: FeaturesV2(x)).distinct()
 
         allWordsFlat = self.featuresRDD.flatMap(lambda x: list(x.words))
         self.allWordsFlatUnique = allWordsFlat.distinct().sortBy(lambda x: x)
@@ -37,12 +38,14 @@ class DataSetMaker(object):
         #print(str(self.allWordsFlatUnique.collect()))
         
     def vectorize(self):
+
+        print('debut vectorize')        
+        
         self.indexFeatures = self.featuresRDD.zipWithIndex()
         self.indexFeaturesReverse = self.indexFeatures.map(lambda x: (x[1], x[0]))
         self.indexWords = self.allWordsFlatUnique.zipWithIndex()
         self.indexBg2 = self.allBg2FlatUnique.zipWithIndex()
-        
-
+           
         featuresCrossWords = self.indexFeatures.cartesian(self.indexWords)
         featuresCrossBG2 = self.indexFeatures.cartesian(self.indexBg2)
         # ((features, 1), ('toto', 5))
@@ -57,9 +60,9 @@ class DataSetMaker(object):
         vectGroupedFeaturesXWords = vectFlatFeaturesXWords.groupByKey()
         vectGroupedFeaturesXBG2 = vectFlatFeaturesXBG2.groupByKey()
 
-        featuresOfWords = vectGroupedFeaturesXWords.mapValues(lambda x: [a[1] for a in sorted(x, key=lambda b: b[0])])
+        featuresOfWords = vectGroupedFeaturesXWords.mapValues(lambda x: [a[1] for a in sorted(x, key=lambda b: b[0])]).cache()
             
-        featuresOfBG2 = vectGroupedFeaturesXBG2.mapValues(lambda x: [a[1] for a in sorted(x, key=lambda b: b[0])])
+        featuresOfBG2 = vectGroupedFeaturesXBG2.mapValues(lambda x: [a[1] for a in sorted(x, key=lambda b: b[0])]).cache()
         
         self.labelPointsRdd = featuresOfWords.union(featuresOfBG2).reduceByKey(lambda a,b: a+b).join(self.indexFeaturesReverse).mapValues(lambda x: LabeledPoint(x[1].isGood(), x[0])).values()
         

@@ -4,10 +4,11 @@ Created on Wed Apr  1 14:24:01 2015
 
 @author: droz
 """
+'''
 import os
 os.environ['HOME'] = '/tmp'
 os.environ['SPARK_WORKER_DIR'] = '/tmp'
-
+'''
 from DataClassifier import DataClassifier
 from pyspark.mllib.classification import SVMWithSGD
 from MessageManager import MessageManager
@@ -23,7 +24,8 @@ if __name__ == "__main__":
     path = 'hdfs://157.26.83.52/user/wdroz/headlines-docs.csv'    
     fileRdd = sc.textFile(path, use_unicode=False)
     newSource = ReutersNewsSourceHDFS(fileRdd)
-    newsRDD = newSource.lookingAll('NASDAQ:GOOGL', ['GOOG', 'GOOGL', 'GOOGLE'])
+    #newsRDD = newSource.lookingAll('NASDAQ:GOOGL', ['GOOG', 'GOOGL', 'GOOGLE'])
+    newsRDD = newSource.lookingAll('NASDAQ:NVDA', ['NVIDIA'])
     newsRDD.cache()
     print('nb news : %d' % newsRDD.count())
     dataSetMaker = DataSetMaker()

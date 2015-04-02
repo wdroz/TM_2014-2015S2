@@ -4,9 +4,11 @@ Created on Wed Mar 11 15:46:45 2015
 
 @author: droz
 """
+'''
 import os
 os.environ['HOME'] = '/tmp'
 os.environ['SPARK_WORKER_DIR'] = '/tmp'
+'''
 from textblob import TextBlob, Word
 import re
 
