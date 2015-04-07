@@ -19,7 +19,29 @@ from pyspark.mllib.regression import LabeledPoint
 from MessageManager import MessageManager
 from DataClassifier import DataClassifier
 from pyspark.mllib.classification import SVMWithSGD
+from pyspark.mllib.feature import HashingTF
 
+class DataSetMakerV2(object):
+    def __init__(self, n=10000):
+        self.n = n
+        
+    def process(self, newsRDD):
+        hashingTF = HashingTF(self.n)
+        self.newsRDD = newsRDD
+        self.featuresRDD = newsRDD.map(lambda x: FeaturesV2(x))
+        
+        toto = self.featuresRDD.take(1)[0]
+        print(toto.words + toto.bg2 + toto.bg3)
+
+        self.labeledPointsRdd = self.featuresRDD.map(lambda x: LabeledPoint(x.isGoodN(1), hashingTF.transform(x.words + x.bg2 + x.bg3)))
+        
+        nbPos = self.featuresRDD.filter(lambda x: x.isGood()).count()
+        nbTot = self.featuresRDD.count()
+        
+        print("nbTot %d, nbPos : %d" % (nbTot, nbPos))
+        
+        return self.labeledPointsRdd
+       
 
 class DataSetMaker(object):
     def __init__(self):
@@ -96,9 +118,8 @@ if __name__ == "__main__":
     allNews = [createRandomNews() for x in range(30)]
     sc = SparkContext()
     newsRDD = sc.parallelize(allNews).distinct()
-    dataSetMaker = DataSetMaker()
-    dataSetMaker.process(newsRDD)
-    fullDataSet = dataSetMaker.vectorize()
+    dataSetMaker = DataSetMakerV2()
+    fullDataSet = dataSetMaker.process(newsRDD)
     fullDataSet.cache()
     dc = DataClassifier(fullDataSet, SVMWithSGD)
     MessageManager.debugMessage("main : start crossvalidation")

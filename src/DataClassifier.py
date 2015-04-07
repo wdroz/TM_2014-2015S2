@@ -70,6 +70,7 @@ class DataClassifier(object):
             if(prec > precMax):
                 precMax = prec
             listPrec.append(prec)
+            print('iteration precision : %f' % prec)
         return precMin, precMax, mean(listPrec)
     
     def train(self, trainingSet):

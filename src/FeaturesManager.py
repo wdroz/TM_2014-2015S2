@@ -22,7 +22,7 @@ class FeaturesV2(object):
         self.processMarketStatus()
         self.words = self.processWords()
         self.bg2 = self.processBigram(2)
-        #self.bg3 = self.processBigram(3)
+        self.bg3 = self.processBigram(3)
         
     def textblobLemma(self, tb):
         #myTab = []
@@ -50,8 +50,13 @@ class FeaturesV2(object):
             pass # empty
             
     def processWords(self):
+        words = []
         #return [x for x in self.textBlob.words]
-        return self.publication.split(' ')
+        for word in re.split('\W+', self.publication):
+            if(word != ''):
+                words.append(word)
+        return words
+        #return self.publication.split(' ')
             
     def processBigram(self, n=2):
         tab = []
@@ -59,7 +64,7 @@ class FeaturesV2(object):
             subTab = []
             for y in range(n):
                 subTab.append(self.words[x+y])
-            tab.append(tuple(subTab))
+            tab.append(" ".join(subTab))
         return tab
         #return [tuple(x) for x in self.textBlob.ngrams(n)]
     
@@ -76,6 +81,9 @@ class FeaturesV2(object):
         
     def isGood(self):
         return self.marketChangeEndToEnd > 0.0
+        
+    def isGoodN(self, n):
+        return self.marketChange[n] > 0
 
 class Features(object):
     def __init__(self, news):

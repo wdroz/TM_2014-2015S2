@@ -43,7 +43,7 @@ class ReutersNewsSourceHDFS(NewsSource):
                     msg = ''.join(lines[2:])
                     if(hasAnyofTheresKeywords(upperKeywords, head.upper()) or hasAnyofTheresKeywords(upperKeywords, msg.upper())):
                         #MessageManager.debugMessage("ReutersNewsSource : head or msg has keywords")
-                        return News(pubDate=date, symbole=symbole, publication=head, pubSource="Reuters")
+                        return News(pubDate=date, symbole=symbole, publication=head+msg, pubSource="Reuters")
             except:
                 pass # explicative line or empty
             return None
