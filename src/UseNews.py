@@ -9,8 +9,9 @@ import os
 os.environ['HOME'] = '/tmp'
 os.environ['SPARK_WORKER_DIR'] = '/tmp'
 '''
-from DataClassifier import DataClassifier
-from pyspark.mllib.classification import SVMWithSGD, LogisticRegressionWithSGD, LogisticRegressionWithLBFGS
+from DataClassifier import DataClassifier, DataClassifierEvaluator
+from DataClassifierV2 import ClassifiersWrapper
+from pyspark.mllib.classification import SVMWithSGD, LogisticRegressionWithSGD, LogisticRegressionWithLBFGS, NaiveBayes
 from MessageManager import MessageManager
 from UseFeaturesv2 import DataSetMakerV2
 from ReutersNewsSource import ReutersNewsSourceHDFS
@@ -35,12 +36,22 @@ if __name__ == "__main__":
     newsRDD = newsRDD.map(lambda x: marketSource.addMarketStatusToNews(x))
     newsRDD.cache()
     print('nb news : %d' % newsRDD.count())
-    dataSetMaker = DataSetMakerV2(n=200000)
+    dataSetMaker = DataSetMakerV2(n=50000)
     fullDataSet = dataSetMaker.process(newsRDD)
     fullDataSet.cache()
-    dc = DataClassifier(fullDataSet, LogisticRegressionWithLBFGS)
-    MessageManager.debugMessage("main : start crossvalidation")
-    precMin, precMax, prec = dc.crossvalidation(5)
-    print('min : %f, max : %f, mean : %f' % (precMin, precMax, prec))
+    myClassifier = ClassifiersWrapper()
+    myClassifier.addClassifier(classifier=SVMWithSGD, trainParameters={}, weight=0.3)
+    myClassifier.addClassifier(classifier=LogisticRegressionWithSGD, trainParameters={}, weight=0.3)
+    myClassifier.addClassifier(classifier=NaiveBayes, trainParameters={}, weight=0.3)
+    myClassifier.addClassifier(classifier=LogisticRegressionWithLBFGS, trainParameters={}, weight=0.7)
+    dataClassifierEvaluator = DataClassifierEvaluator(fullDataSet)
+    dataClassifierEvaluator.addModel(myClassifier, 'My Classifier')
+    dataClassifierEvaluator.addModel(LogisticRegressionWithLBFGS, 'LogisticRegressionWithLBFGS')
+    dataClassifierEvaluator.addModel(SVMWithSGD, 'SVMWithSGD')
+    dataClassifierEvaluator.selectBestModel()
+    #dc = DataClassifier(fullDataSet, LogisticRegressionWithLBFGS)
+    #MessageManager.debugMessage("main : start crossvalidation")
+    #precMin, precMax, prec = dc.crossvalidation(5)
+    #print('min : %f, max : %f, mean : %f' % (precMin, precMax, prec))
     
     

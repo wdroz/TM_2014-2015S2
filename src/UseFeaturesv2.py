@@ -18,7 +18,8 @@ from pyspark import SparkContext
 from pyspark.mllib.regression import LabeledPoint
 from MessageManager import MessageManager
 from DataClassifier import DataClassifier
-from pyspark.mllib.classification import SVMWithSGD
+from DataClassifierV2 import ClassifiersWrapper
+from pyspark.mllib.classification import SVMWithSGD, LogisticRegressionWithSGD, LogisticRegressionWithLBFGS
 from pyspark.mllib.feature import HashingTF
 
 class DataSetMakerV2(object):
@@ -121,7 +122,11 @@ if __name__ == "__main__":
     dataSetMaker = DataSetMakerV2()
     fullDataSet = dataSetMaker.process(newsRDD)
     fullDataSet.cache()
-    dc = DataClassifier(fullDataSet, SVMWithSGD)
+    myClassifier = ClassifiersWrapper()
+    myClassifier.addClassifier(classifier=SVMWithSGD, trainParameters={}, weight=0.3)
+    myClassifier.addClassifier(classifier=LogisticRegressionWithSGD, trainParameters={}, weight=0.3)
+    myClassifier.addClassifier(classifier=LogisticRegressionWithLBFGS, trainParameters={}, weight=0.3)
+    dc = DataClassifier(fullDataSet, myClassifier)
     MessageManager.debugMessage("main : start crossvalidation")
     precMin, precMax, prec = dc.crossvalidation(5)
     print('min : %f, max : %f, mean : %f' % (precMin, precMax, prec))

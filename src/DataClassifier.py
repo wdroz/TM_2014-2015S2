@@ -88,3 +88,31 @@ class DataClassifier(object):
         self.model = pickle.load(open(self.modelpath, 'rb'))
         
         
+class DataClassifierEvaluator(object):
+    '''
+    class for evaluating classifiers
+    '''
+    def __init__(self, dataset):
+        self.dataset = dataset
+        self.classifier = []
+        
+    def addModel(self, classifier, name=''):
+        if(name == ''):
+            name = type(classifier).__name__
+        self.classifier.append((classifier, name))
+        
+    def selectBestModel(self):
+        nameBest = ''
+        bestPrec = 0.0
+        bestClassifier = None
+        for (classifier, name) in self.classifier:
+            MessageManager.debugMessage('DataClassifierEvaluator : Start evaluation of %s' % name)
+            dc = DataClassifier(self.dataset, classifier)
+            precMin, precMax, precMean = dc.crossvalidation()
+            MessageManager.debugMessage('DataClassifierEvaluator : Results for %s : \n\tPrecMin : %f\n\tPrecMax : %f\n\tPrecMean : %f' % (name, precMin, precMax, precMean))
+            if(precMean > bestPrec):
+                bestPrec = precMin
+                nameBest = name
+                bestClassifier = classifier
+        MessageManager.debugMessage('DataClassifierEvaluator : best classifier is %s with precision of %f' % (nameBest, bestPrec))
+        return bestClassifier, nameBest
