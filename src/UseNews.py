@@ -25,14 +25,14 @@ if __name__ == "__main__":
     path = 'hdfs://157.26.83.52/user/wdroz/headlines-docs.csv'    
     fileRdd = sc.textFile(path, use_unicode=False)
     newSource = ReutersNewsSourceHDFS(fileRdd)
-    #newsRDD1 = newSource.lookingAll('NASDAQ:GOOGL', ['GOOG', 'GOOGL', 'GOOGLE'])
-    newsRDD2 = newSource.lookingAll('NASDAQ:NVDA', ['NVIDIA'])
+    newsRDD1 = newSource.lookingAll('NASDAQ:GOOGL', ['GOOG', 'GOOGL', 'GOOGLE'])
+    #newsRDD2 = newSource.lookingAll('NASDAQ:NVDA', ['NVIDIA'])
     #newsRDD3 = newSource.lookingAll('VTX:NESN', ['NESTLE'])
     #newsRDD4 = newSource.lookingAll('VTX:SCMN', ['SWISSCOM'])
     #newsRDD5 = newSource.lookingAll('VTX:NOVN', ['NOVARTIS'])  
     #newsRDD = newsRDD1.union(newsRDD2)
     #newsRDD = newsRDD1.union(newsRDD2).union(newsRDD3).union(newsRDD4).union(newsRDD5)
-    newsRDD = newsRDD2    
+    newsRDD = newsRDD1    
     marketSource = GoogleFinanceMarketSourceSpark(['NASDAQ:GOOGL', 'NASDAQ:NVDA', 'VTX:NESN', 'VTX:SCMN', 'VTX:NOVN'])
     newsRDD = newsRDD.map(lambda x: marketSource.addMarketStatusToNews(x))
     newsRDD.cache()
@@ -49,7 +49,8 @@ if __name__ == "__main__":
     dataClassifierEvaluator.addModel(myClassifier, 'My Classifier')
     dataClassifierEvaluator.addModel(LogisticRegressionWithLBFGS, 'LogisticRegressionWithLBFGS')
     dataClassifierEvaluator.addModel(SVMWithSGD, 'SVMWithSGD')
-    dataClassifierEvaluator.selectBestModel()
+    dataClassifierEvaluator.crossvalidation()
+    #dataClassifierEvaluator.selectBestModel()
     #dc = DataClassifier(fullDataSet, LogisticRegressionWithLBFGS)
     #MessageManager.debugMessage("main : start crossvalidation")
     #precMin, precMax, prec = dc.crossvalidation(5)
