@@ -111,7 +111,7 @@ class DataClassifierEvaluator(object):
             precMin, precMax, precMean = dc.crossvalidation()
             MessageManager.debugMessage('DataClassifierEvaluator : Results for %s : \n\tPrecMin : %f\n\tPrecMax : %f\n\tPrecMean : %f' % (name, precMin, precMax, precMean))
             if(precMean > bestPrec):
-                bestPrec = precMin
+                bestPrec = precMean
                 nameBest = name
                 bestClassifier = classifier
         MessageManager.debugMessage('DataClassifierEvaluator : best classifier is %s with precision of %f' % (nameBest, bestPrec))
