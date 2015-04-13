@@ -7,7 +7,19 @@ Created on Thu Apr  9 14:57:58 2015
 
 class DataClassifierV2(object):
         pass
+
+class DecisionTreeWrapper(object):
+    def __init__(self, **kwargs):
+        self.classifier = kwargs['classifier']
+        self.trainParameters = kwargs['trainParameters']
     
+    def train(self, dataset):
+        self.model = self.classifier.trainClassifier(dataset, **self.trainParameters)
+        return self
+        
+    def predict(self, vect):
+        return self.model.predict(vect)
+        
 
 class ClassifiersWrapper(object):
     '''
