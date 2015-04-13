@@ -84,6 +84,25 @@ class FeaturesV2(object):
         
     def isGoodN(self, n):
         return self.marketChange[n] > 0
+        
+    def giveClasseN(self, n):
+        '''
+        give the class :
+          0 : very bad
+          1 : bad
+          2 : good
+          3 : very good
+          
+        n is the day of market [0,2]
+        '''
+        if (self.marketChange[n] > 0.03):
+            return 3
+        elif (self.marketChange[n] > 0):
+            return 2
+        elif (self.marketChange[n] > -0.03):
+            return 1
+        else:
+            return 0
 
 class Features(object):
     def __init__(self, news):
