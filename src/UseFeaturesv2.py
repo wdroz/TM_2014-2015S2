@@ -34,12 +34,19 @@ class DataSetMakerV2(object):
         toto = self.featuresRDD.take(1)[0]
         print(toto.words + toto.bg2 + toto.bg3)
 
-        self.labeledPointsRdd = self.featuresRDD.map(lambda x: LabeledPoint(x.isGoodN(1), hashingTF.transform(x.words + x.bg2 + x.bg3)))
+        self.labeledPointsRdd = self.featuresRDD.map(lambda x: LabeledPoint(x.giveClasseN(1), hashingTF.transform(x.words + x.bg2 + x.bg3)))
         
-        nbPos = self.featuresRDD.filter(lambda x: x.isGood()).count()
+        nbVeryPos = self.featuresRDD.filter(lambda x: x.giveClasseN(1) == 3).count()
+        nbPos = self.featuresRDD.filter(lambda x: x.giveClasseN(1) == 2).count()
+        nbNeg = self.featuresRDD.filter(lambda x: x.giveClasseN(1) == 1).count()
+        nbVeryNeg = self.featuresRDD.filter(lambda x: x.giveClasseN(1) == 0).count()
         nbTot = self.featuresRDD.count()
         
-        print("nbTot %d, nbPos : %d" % (nbTot, nbPos))
+        print("nbTot %d" % nbTot)
+        print("\tnbVeryPos %d" % nbVeryPos)
+        print("\tnbPos %d" % nbPos)
+        print("\tnbNeg %d" % nbNeg)
+        print("\tnbVeryNeg %d" % nbVeryNeg)
         
         return self.labeledPointsRdd
        
