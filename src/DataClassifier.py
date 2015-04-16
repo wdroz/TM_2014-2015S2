@@ -10,6 +10,7 @@ from numpy import mean
 from MessageManager import MessageManager
 import pickle
 
+
 class DataClassifier(object):
     '''
     Classe qui permet de classifier des données à l'aide d'un classifier

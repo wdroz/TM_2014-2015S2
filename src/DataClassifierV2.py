@@ -4,6 +4,64 @@ Created on Thu Apr  9 14:57:58 2015
 
 @author: droz
 """
+from pyspark.mllib.regression import LabeledPoint
+
+class DataClassifierMultiClasses(object):
+    '''
+    Classe qui permet de classifier avec du multiclasse
+    '''
+    def __init__(self, binaryClassifier, numClasses):
+        self.binaryClassifier = binaryClassifier
+        self.numClasses = numClasses
+        self.models = []
+        self.combinaisons = []
+        # Create all combinaisons for numClasses
+        for a in range(numClasses):
+            for b in range(a+1,numClasses):
+                self.combinaisons.append((a,b))
+        
+    def train(self, dataset):
+        datasetOnlyX = []
+        # Create a dataset per classes
+        for i in range(self.numClasses):
+            datasetOnlyX.append(dataset.filter(lambda x: x.label == i))
+        index = 0
+        for combi in self.combinaisons:
+            print('train - index %d' % index)
+            index +=1
+            a = combi[0]
+            b = combi[1]
+            # Convert classes by 0 and 1 for binary classification
+            aRdd = datasetOnlyX[a].map(lambda x: LabeledPoint(0, x.features))
+            bRdd = datasetOnlyX[b].map(lambda x: LabeledPoint(1, x.features))
+            model = self.binaryClassifier.train(aRdd.union(bRdd))
+            self.models.append(model)
+        return self
+            
+    
+    def predict(self, vect):
+        winner = 0
+        winnerPts = 0
+        predictVote = [0 for x in range(self.numClasses)]
+        for index in range(len(self.combinaisons)):
+            #print('predict - index %d' % index)
+            combi = self.combinaisons[index]
+            a = combi[0]
+            b = combi[1]
+            model = self.models[index]
+            pred = model.predict(vect)
+            if(pred == 0):
+                predictVote[a] += 1
+                if(predictVote[a] > winnerPts):
+                    winnerPts = predictVote[a]
+                    winner = a
+            else:
+                predictVote[b] += 1
+                if(predictVote[b] > winnerPts):
+                    winnerPts = predictVote[b]
+                    winner = b
+        return winner
+        
 
 class DataClassifierV2(object):
         pass

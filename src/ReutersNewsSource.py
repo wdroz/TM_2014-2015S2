@@ -20,12 +20,11 @@ def _fct(lookingList, line):
     newsList = []
     try:
         lines = line.split(',')
-        
+        head = lines[1]
+        msg = ''.join(lines[2:])
         date = datetime.datetime.strptime(lines[0], "%Y-%m-%d %H:%M:%S")
         for lookingArgs in lookingList:
             if(date >= lookingArgs['startDate'] and date <= lookingArgs['endDate']):
-                head = lines[1]
-                msg = ''.join(lines[2:])
                 if(hasAnyofTheresKeywords(lookingArgs['keywords'], head.upper()) or hasAnyofTheresKeywords(lookingArgs['keywords'], msg.upper())):
                     #MessageManager.debugMessage("ReutersNewsSource : head or msg has keywords")
                     newsList.append(News(pubDate=date, symbole=lookingArgs['symbole'], publication=head+msg, pubSource="Reuters"))
@@ -49,11 +48,11 @@ class ReutersNewsSourceHDFSV2(NewsSource):
         self.lookingAt(symbole, startDate, endDate, keywords)
     
     def lookingAt(self, symbole, startDate, endDate, keywords):
+        keywords.append(symbole)
         upperKeywords = [x.upper() for x in keywords]
         self.lookingList.append({'symbole' : symbole, 'startDate' : startDate, 'endDate' : endDate, 'keywords' : upperKeywords})
 
     def doIt(self):
-        
         lookingList = self.lookingList
         newsRdd = self.filenameRdd.flatMap(lambda x: _fct(lookingList, x)).filter(lambda x: x != [])
         MessageManager.debugMessage("ReutersNewsSourceHDFS : stop reading Reuters corpus")
