@@ -95,11 +95,11 @@ class FeaturesV2(object):
           
         n is the day of market [0,2]
         '''
-        if (self.marketChange[n] > 0.03):
+        if (self.marketChange[n] > 0.015):
             return 3
         elif (self.marketChange[n] > 0):
             return 2
-        elif (self.marketChange[n] > -0.03):
+        elif (self.marketChange[n] > -0.015):
             return 1
         else:
             return 0
