@@ -10,6 +10,55 @@ from MessageManager import MessageManager
 import datetime
 import time
 
+def hasAnyofTheresKeywords(keywords, text):
+    for word in keywords:
+        if(word in text):
+            return True
+    return False
+
+def _fct(lookingList, line):
+    newsList = []
+    try:
+        lines = line.split(',')
+        
+        date = datetime.datetime.strptime(lines[0], "%Y-%m-%d %H:%M:%S")
+        for lookingArgs in lookingList:
+            if(date >= lookingArgs['startDate'] and date <= lookingArgs['endDate']):
+                head = lines[1]
+                msg = ''.join(lines[2:])
+                if(hasAnyofTheresKeywords(lookingArgs['keywords'], head.upper()) or hasAnyofTheresKeywords(lookingArgs['keywords'], msg.upper())):
+                    #MessageManager.debugMessage("ReutersNewsSource : head or msg has keywords")
+                    newsList.append(News(pubDate=date, symbole=lookingArgs['symbole'], publication=head+msg, pubSource="Reuters"))
+    except:
+        pass # explicative line or empty
+        
+    return newsList
+
+class ReutersNewsSourceHDFSV2(NewsSource):
+    
+    def __init__(self, filenameRdd):
+        NewsSource.__init__(self)
+        self.filenameRdd = filenameRdd
+        self.lookingList = []
+        
+    def lookingAll(self, symbole, keywords):
+        startDate = "2000-01-01"
+        endDate = time.strftime('%Y-%m-%d')
+        startDate = datetime.datetime.strptime(startDate, "%Y-%m-%d")
+        endDate = datetime.datetime.strptime(endDate, "%Y-%m-%d")
+        self.lookingAt(symbole, startDate, endDate, keywords)
+    
+    def lookingAt(self, symbole, startDate, endDate, keywords):
+        upperKeywords = [x.upper() for x in keywords]
+        self.lookingList.append({'symbole' : symbole, 'startDate' : startDate, 'endDate' : endDate, 'keywords' : upperKeywords})
+
+    def doIt(self):
+        
+        lookingList = self.lookingList
+        newsRdd = self.filenameRdd.flatMap(lambda x: _fct(lookingList, x)).filter(lambda x: x != [])
+        MessageManager.debugMessage("ReutersNewsSourceHDFS : stop reading Reuters corpus")
+        return newsRdd
+
 class ReutersNewsSourceHDFS(NewsSource):
     '''
     Classe qui est charger de récolter les news depuis l'HDFS
