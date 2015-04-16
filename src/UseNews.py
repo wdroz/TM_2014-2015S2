@@ -15,7 +15,7 @@ from pyspark.mllib.classification import SVMWithSGD, LogisticRegressionWithSGD, 
 from pyspark.mllib.tree import DecisionTree
 from MessageManager import MessageManager
 from UseFeaturesv2 import DataSetMakerV2
-from ReutersNewsSource import ReutersNewsSourceHDFS
+from ReutersNewsSource import ReutersNewsSourceHDFSV2
 from pyspark import SparkContext, SparkConf
 from GoogleFinanceMarketSource import GoogleFinanceMarketSourceSpark
 if __name__ == "__main__":
@@ -25,15 +25,22 @@ if __name__ == "__main__":
     #path = '/media/droz/KIKOOLOL HDD/Corpus/headlines-docs.csv'
     path = 'hdfs://157.26.83.52/user/wdroz/headlines-docs.csv'    
     fileRdd = sc.textFile(path, use_unicode=False)
-    newSource = ReutersNewsSourceHDFS(fileRdd)
+    newSource = ReutersNewsSourceHDFSV2(fileRdd)
     #newsRDD1 = newSource.lookingAll('NASDAQ:GOOGL', ['GOOG', 'GOOGL', 'GOOGLE'])
     #newsRDD2 = newSource.lookingAll('NASDAQ:NVDA', ['NVIDIA'])
     #newsRDD3 = newSource.lookingAll('VTX:NESN', ['NESTLE'])
-    newsRDD4 = newSource.lookingAll('VTX:SCMN', ['SWISSCOM'])
+    #newsRDD4 = newSource.lookingAll('VTX:SCMN', ['SWISSCOM'])
     #newsRDD5 = newSource.lookingAll('VTX:NOVN', ['NOVARTIS'])  
     #newsRDD = newsRDD1.union(newsRDD2)
     #newsRDD = newsRDD1.union(newsRDD2).union(newsRDD3).union(newsRDD4).union(newsRDD5)
-    newsRDD = newsRDD4
+    #newsRDD = newsRDD4
+    newSource.lookingAll('NASDAQ:GOOGL', ['GOOG', 'GOOGL', 'GOOGLE'])
+    newSource.lookingAll('NASDAQ:NVDA', ['NVIDIA'])
+    newSource.lookingAll('VTX:NESN', ['NESTLE'])
+    newSource.lookingAll('VTX:SCMN', ['SWISSCOM'])
+    newSource.lookingAll('VTX:SCMN', ['SWISSCOM'])
+    
+    newsRDD = newSource.doIt()
     marketSource = GoogleFinanceMarketSourceSpark(['NASDAQ:GOOGL', 'NASDAQ:NVDA', 'VTX:NESN', 'VTX:SCMN', 'VTX:NOVN'])
     newsRDD = newsRDD.map(lambda x: marketSource.addMarketStatusToNews(x))
     newsRDD.cache()
@@ -48,9 +55,9 @@ if __name__ == "__main__":
     myClassifier.addClassifier(classifier=LogisticRegressionWithLBFGS, trainParameters={}, weight=0.7)
     dataClassifierEvaluator = DataClassifierEvaluator(fullDataSet)
     #dataClassifierEvaluator.addModel(myClassifier, 'My Classifier')
-    #dataClassifierEvaluator.addModel(NaiveBayes, 'NaiveBayes')
-    tree = DecisionTreeWrapper(classifier=DecisionTree, trainParameters={'numClasses': 4, 'categoricalFeaturesInfo' : {}})
-    dataClassifierEvaluator.addModel(tree, 'DecisionTreeWrapper')
+    dataClassifierEvaluator.addModel(NaiveBayes, 'NaiveBayes')
+    #tree = DecisionTreeWrapper(classifier=DecisionTree, trainParameters={'numClasses': 4, 'categoricalFeaturesInfo' : {}})
+    #dataClassifierEvaluator.addModel(tree, 'DecisionTreeWrapper')
     #dataClassifierEvaluator.addModel(LogisticRegressionWithLBFGS, 'LogisticRegressionWithLBFGS')
     #dataClassifierEvaluator.addModel(SVMWithSGD, 'SVMWithSGD')
     dataClassifierEvaluator.crossvalidation()
