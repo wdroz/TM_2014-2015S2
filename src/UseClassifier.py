@@ -20,7 +20,7 @@ if __name__ == "__main__":
     sc = SparkContext()
     #toto = DataClassifierMultiClasses(SVMWithSGD, 5)
     #path = '/media/droz/KIKOOLOL HDD/Corpus/headlines-docs.csv'
-    path = 'hdfs://157.26.83.52/user/wdroz/headlines-docs.csv'    
+    path = 'hdfs://157.26.83.52/user/wdroz/mini-headlines-docs.csv'    
     fileRdd = sc.textFile(path, use_unicode=False)
     newSource = ReutersNewsSourceHDFSV2(fileRdd)
     #newsRDD1 = newSource.lookingAll('NASDAQ:GOOGL', ['GOOG', 'GOOGL', 'GOOGLE'])
@@ -31,9 +31,9 @@ if __name__ == "__main__":
     #newsRDD = newsRDD1.union(newsRDD2)
     #newsRDD = newsRDD1.union(newsRDD2).union(newsRDD3).union(newsRDD4).union(newsRDD5)
     #newsRDD = newsRDD4
-    #newSource.lookingAll('NASDAQ:GOOGL', ['GOOG', 'GOOGL', 'GOOGLE'])
-    #newSource.lookingAll('NASDAQ:NVDA', ['NVIDIA'])
-    #newSource.lookingAll('VTX:NESN', ['NESTLE'])
+    newSource.lookingAll('NASDAQ:GOOGL', ['GOOG', 'GOOGL', 'GOOGLE'])
+    newSource.lookingAll('NASDAQ:NVDA', ['NVIDIA'])
+    newSource.lookingAll('VTX:NESN', ['NESTLE'])
     newSource.lookingAll('VTX:SCMN', ['SWISSCOM'])
     newSource.lookingAll('VTX:NOVN', ['NOVARTIS'])
     
