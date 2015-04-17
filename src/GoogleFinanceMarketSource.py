@@ -43,9 +43,9 @@ class GoogleFinanceMarketSourceSpark(MarketSource):
                     date_m,open_m,high_m,low_m,close_m,volume_m = line.split(',')
                     date_m = datetime.datetime.strptime(date_m, "%d-%b-%y")
                     if(date_m >= news.pubDate and date_m <= enddate):
-                        MessageManager.debugMessage("GoogleFinanceMarketSource : add marketStatus")
-                        for machin in [date_m,open_m,high_m,low_m,close_m,volume_m]:
-                             MessageManager.debugMessage(str(machin))
+                        MessageManager.debugMessage("GoogleFinanceMarketSource : adding marketStatus")
+                        #for machin in [date_m,open_m,high_m,low_m,close_m,volume_m]:
+                        #     MessageManager.debugMessage(str(machin))
                         news.marketStatus.append(MarketStatus(date_m,open_m,high_m,low_m,close_m,volume_m))
                         MessageManager.debugMessage("GoogleFinanceMarketSource : marketStatus added")
                 except:
