@@ -24,16 +24,20 @@ class DataClassifierMultiClasses(object):
         datasetOnlyX = []
         # Create a dataset per classes
         for i in range(self.numClasses):
-            datasetOnlyX.append(dataset.filter(lambda x: x.label == i))
+            specRdd = dataset.filter(lambda x: x.label == i)
+            specRdd.cache()
+            datasetOnlyX.append(specRdd)
         index = 0
+        self.models = []
         for combi in self.combinaisons:
-            print('train - index %d' % index)
             index +=1
             a = combi[0]
             b = combi[1]
+            print('train - index %02d\t(%d, %d)' % (index, a, b))
             # Convert classes by 0 and 1 for binary classification
             aRdd = datasetOnlyX[a].map(lambda x: LabeledPoint(0, x.features))
             bRdd = datasetOnlyX[b].map(lambda x: LabeledPoint(1, x.features))
+            print('\tsize a : %d, size b : %s' % (aRdd.count(), bRdd.count()))
             model = self.binaryClassifier.train(aRdd.union(bRdd))
             self.models.append(model)
         return self
