@@ -40,10 +40,10 @@ if __name__ == "__main__":
     newsRDD = newSource.doIt()
     marketSource = GoogleFinanceMarketSourceSpark(['NASDAQ:GOOGL', 'NASDAQ:NVDA', 'VTX:NESN', 'VTX:SCMN', 'VTX:NOVN'])
     newsRDD = newsRDD.map(lambda x: marketSource.addMarketStatusToNews(x))
-    newsRDD = newsRDD.randomSplit([1,1,1,1,1,1,1,1,1,1,1,1,1,1,1])[0]
+    #newsRDD = newsRDD.randomSplit([1,1,1,1,1,1,1,1,1,1,1,1,1,1,1])[0]
     newsRDD.cache()
     print('nb news : %d' % newsRDD.count())
-    dataSetMaker = DataSetMakerV2(n=20000)
+    dataSetMaker = DataSetMakerV2(n=200000)
     fullDataSet = dataSetMaker.process(newsRDD)
     fullDataSet.cache()
     myClassifier = ClassifiersWrapper()
@@ -53,8 +53,8 @@ if __name__ == "__main__":
     myClassifier.addClassifier(classifier=LogisticRegressionWithLBFGS, trainParameters={}, weight=0.7)
     dataClassifierEvaluator = DataClassifierEvaluator(fullDataSet)
     #dataClassifierEvaluator.addModel(myClassifier, 'My Classifier')
-    svmOneVsOne = DataClassifierMultiClasses(SVMWithSGD, 4)
-    dataClassifierEvaluator.addModel(svmOneVsOne, 'SVMOneVsOne')
+    myClassifierOnevsOne = DataClassifierMultiClasses(myClassifier, 4)
+    dataClassifierEvaluator.addModel(myClassifierOnevsOne, 'myClassifierOnevsOne')
     dataClassifierEvaluator.addModel(NaiveBayes, 'NaiveBayes')
     #tree = DecisionTreeWrapper(classifier=DecisionTree, trainParameters={'numClasses': 4, 'categoricalFeaturesInfo' : {}})
     #dataClassifierEvaluator.addModel(tree, 'DecisionTreeWrapper')
