@@ -5,6 +5,7 @@ Created on Thu Apr  9 14:57:58 2015
 @author: droz
 """
 from pyspark.mllib.regression import LabeledPoint
+from copy import deepcopy
 
 class DataClassifierMultiClasses(object):
     '''
@@ -50,8 +51,7 @@ class DataClassifierMultiClasses(object):
         for index in range(len(self.combinaisons)):
             #print('predict - index %d' % index)
             combi = self.combinaisons[index]
-            a = combi[0]
-            b = combi[1]
+            a,b = combi
             model = self.models[index]
             pred = model.predict(vect)
             if(pred == 0):
@@ -101,11 +101,16 @@ class ClassifiersWrapper(object):
             pass
         
     def train(self, dataset):
+        self.models = []
         for (classifier, trainParameters, weight) in self.classifiers:
             model = classifier.train(dataset, **trainParameters)
             self.models.append((model, weight))
-            
-        return self
+        #return self
+        
+        tmp = ClassifiersWrapper()
+        tmp.classifiers = self.classifiers[:]
+        tmp.models = self.models[:]
+        return tmp
         
     def predict(self, vect):
         predictions = {}     

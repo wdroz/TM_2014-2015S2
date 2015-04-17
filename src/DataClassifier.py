@@ -9,7 +9,7 @@ import random
 from numpy import mean
 from MessageManager import MessageManager
 import pickle
-
+from copy import deepcopy
 
 class DataClassifier(object):
     '''
