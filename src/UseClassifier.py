@@ -5,7 +5,7 @@ Created on Thu Apr 16 13:35:55 2015
 @author: droz
 """
 from DataClassifier import DataClassifier, DataClassifierEvaluator
-from DataClassifierV2 import ClassifiersWrapper, DecisionTreeWrapper, DataClassifierMultiClasses
+from DataClassifierV2 import ClassifiersWrapper, DecisionTreeWrapper, DataClassifierMultiClassesOneVsOne, DataClassifierMultiClassesOneVsMany
 from pyspark.mllib.classification import SVMWithSGD, LogisticRegressionWithSGD, LogisticRegressionWithLBFGS, NaiveBayes
 from pyspark.mllib.tree import DecisionTree
 from MessageManager import MessageManager
@@ -20,17 +20,10 @@ if __name__ == "__main__":
     sc = SparkContext()
     #toto = DataClassifierMultiClasses(SVMWithSGD, 5)
     #path = '/media/droz/KIKOOLOL HDD/Corpus/headlines-docs.csv'
-    path = 'hdfs://157.26.83.52/user/wdroz/mini-headlines-docs.csv'    
+    path = 'hdfs://157.26.83.52/user/wdroz/headlines-docs.csv'    
     fileRdd = sc.textFile(path, use_unicode=False)
     newSource = ReutersNewsSourceHDFSV2(fileRdd)
-    #newsRDD1 = newSource.lookingAll('NASDAQ:GOOGL', ['GOOG', 'GOOGL', 'GOOGLE'])
-    #newsRDD2 = newSource.lookingAll('NASDAQ:NVDA', ['NVIDIA'])
-    #newsRDD3 = newSource.lookingAll('VTX:NESN', ['NESTLE'])
-    #newsRDD4 = newSource.lookingAll('VTX:SCMN', ['SWISSCOM'])
-    #newsRDD5 = newSource.lookingAll('VTX:NOVN', ['NOVARTIS'])  
-    #newsRDD = newsRDD1.union(newsRDD2)
-    #newsRDD = newsRDD1.union(newsRDD2).union(newsRDD3).union(newsRDD4).union(newsRDD5)
-    #newsRDD = newsRDD4
+
     newSource.lookingAll('NASDAQ:GOOGL', ['GOOG', 'GOOGL', 'GOOGLE'])
     newSource.lookingAll('NASDAQ:NVDA', ['NVIDIA'])
     newSource.lookingAll('VTX:NESN', ['NESTLE'])
@@ -51,9 +44,18 @@ if __name__ == "__main__":
     myClassifier.addClassifier(classifier=LogisticRegressionWithSGD, trainParameters={}, weight=0.3)
     myClassifier.addClassifier(classifier=NaiveBayes, trainParameters={}, weight=0.3)
     myClassifier.addClassifier(classifier=LogisticRegressionWithLBFGS, trainParameters={}, weight=0.7)
+    
+    myClassifier2 = ClassifiersWrapper()
+    myClassifier2.addClassifier(classifier=SVMWithSGD, trainParameters={}, weight=0.3)
+    myClassifier2.addClassifier(classifier=LogisticRegressionWithSGD, trainParameters={}, weight=0.3)
+    myClassifier2.addClassifier(classifier=NaiveBayes, trainParameters={}, weight=0.3)
+    myClassifier2.addClassifier(classifier=LogisticRegressionWithLBFGS, trainParameters={}, weight=0.7)
+    
     dataClassifierEvaluator = DataClassifierEvaluator(fullDataSet)
     #dataClassifierEvaluator.addModel(myClassifier, 'My Classifier')
-    myClassifierOnevsOne = DataClassifierMultiClasses(myClassifier, 4)
+    myClassifierOnevsOne = DataClassifierMultiClassesOneVsOne(myClassifier, 4)
+    myClassifierOnevsMany = DataClassifierMultiClassesOneVsMany(myClassifier2, 4)
+    dataClassifierEvaluator.addModel(myClassifierOnevsMany, 'myClassifierOnevsMany')
     dataClassifierEvaluator.addModel(myClassifierOnevsOne, 'myClassifierOnevsOne')
     dataClassifierEvaluator.addModel(NaiveBayes, 'NaiveBayes')
     #tree = DecisionTreeWrapper(classifier=DecisionTree, trainParameters={'numClasses': 4, 'categoricalFeaturesInfo' : {}})
