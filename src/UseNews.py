@@ -24,7 +24,7 @@ if __name__ == "__main__":
     sc = SparkContext()
     #toto = DataClassifierMultiClasses(SVMWithSGD, 5)
     #path = '/media/droz/KIKOOLOL HDD/Corpus/headlines-docs.csv'
-    path = 'hdfs://157.26.83.52/user/wdroz/headlines-docs.csv'    
+    path = 'hdfs://157.26.83.52/user/wdroz/mini-headlines-docs.csv'    
     fileRdd = sc.textFile(path, use_unicode=False)
     newSource = ReutersNewsSourceHDFSV2(fileRdd)
     #newsRDD1 = newSource.lookingAll('NASDAQ:GOOGL', ['GOOG', 'GOOGL', 'GOOGLE'])
@@ -46,7 +46,7 @@ if __name__ == "__main__":
     newsRDD = newsRDD.map(lambda x: marketSource.addMarketStatusToNews(x))
     newsRDD.cache()
     print('nb news : %d' % newsRDD.count())
-    dataSetMaker = DataSetMakerV2(n=300000)
+    dataSetMaker = DataSetMakerV2(n=200000)
     fullDataSet = dataSetMaker.process(newsRDD)
     fullDataSet.cache()
     myClassifier = ClassifiersWrapper()

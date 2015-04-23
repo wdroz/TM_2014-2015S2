@@ -38,7 +38,7 @@ class DataClassifierMultiClassesOneVsMany(object):
         # Create a dataset per classes
         for i in range(self.numClasses):
             specRdd = dataset.filter(lambda x: x.label == i)
-            specRdd.cache()
+            #specRdd.cache()
             datasetOnlyX.append(specRdd)
         self.models = []
         for i in range(self.numClasses):
@@ -46,7 +46,9 @@ class DataClassifierMultiClassesOneVsMany(object):
             aRdd = one.map(lambda x: LabeledPoint(0, x.features))
             bRdd = many.map(lambda x: LabeledPoint(1, x.features))
             print('\tsize a : %d, size b : %s' % (aRdd.count(), bRdd.count()))
-            model = self.binaryClassifier.train(aRdd.union(bRdd))
+            unionRDD = aRdd.union(bRdd)
+            #unionRDD.cache()
+            model = self.binaryClassifier.train(unionRDD)
             self.models.append(model)
         return self
             

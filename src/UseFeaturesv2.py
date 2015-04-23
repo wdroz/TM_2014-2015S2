@@ -31,8 +31,8 @@ class DataSetMakerV2(object):
         self.newsRDD = newsRDD
         self.featuresRDD = newsRDD.map(lambda x: FeaturesV2(x))
         
-        toto = self.featuresRDD.take(1)[0]
-        print(toto.words + toto.bg2 + toto.bg3)
+        #toto = self.featuresRDD.take(1)[0]
+        #print(toto.words + toto.bg2 + toto.bg3)
 
         self.labeledPointsRdd = self.featuresRDD.map(lambda x: LabeledPoint(x.giveClasseN(1), hashingTF.transform(x.words + x.bg2 + x.bg3)))
         

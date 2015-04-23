@@ -16,8 +16,16 @@ from GoogleFinanceMarketSource import GoogleFinanceMarketSourceSpark
 
 if __name__ == "__main__":
     conf = SparkConf()
+    conf.set('spark.shuffle.blockTransferService', 'nio')
+    conf.set('spark.files.fetchTimeout', '180')
+    conf.set('spark.files.overwrite', 'yes')
+    conf.set('spark.akka.timeout', '180')
+    conf.set('spark.task.maxFailures', '30000')
+    conf.set('spark.akka.frameSize', '500')
+    conf.set('spark.network.timeout', '180')
+    #conf.set('spark.executor.memory', '6g')
     #conf.set('spark.shuffle.memoryFraction', "0")
-    sc = SparkContext()
+    sc = SparkContext(conf=conf)
     #toto = DataClassifierMultiClasses(SVMWithSGD, 5)
     #path = '/media/droz/KIKOOLOL HDD/Corpus/headlines-docs.csv'
     path = 'hdfs://157.26.83.52/user/wdroz/headlines-docs.csv'    

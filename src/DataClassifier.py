@@ -52,8 +52,8 @@ class DataClassifier(object):
         for cpt in range(0, nbSplits):
             MessageManager.debugMessage("DataClassifier : start new cross-validation iteration %d/%d" % (cpt, nbSplits))
             trainSet ,testSet = self._giveTrainAndtest(rdds, cpt)
-            one = trainSet.take(1)[0]
-            print('size of vect : %d' % len(one.features))
+            #one = trainSet.take(1)[0]
+            #print('size of vect : %d' % len(one.features))
             print('trainset size : %d' % trainSet.count())
             print('testset size : %d' % testSet.count())
             # cheat because we can't use self.predict in a map here...
