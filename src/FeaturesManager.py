@@ -80,10 +80,16 @@ class FeaturesV2(object):
         return text.upp()
         
     def isGood(self):
-        return self.marketChangeEndToEnd > 0.0
+        try:
+            return self.marketChangeEndToEnd > 0.0
+        except:
+            return 0
         
     def isGoodN(self, n):
-        return self.marketChange[n] > 0
+        try:
+            return self.marketChange[n] > 0
+        except:
+            return 0
         
     def giveClasseN(self, n):
         '''
@@ -95,13 +101,16 @@ class FeaturesV2(object):
           
         n is the day of market [0,2]
         '''
-        if (self.marketChange[n] > 0.015):
-            return 3
-        elif (self.marketChange[n] > 0):
-            return 2
-        elif (self.marketChange[n] > -0.015):
-            return 1
-        else:
+        try:
+            if (self.marketChange[n] > 0.015):
+                return 3
+            elif (self.marketChange[n] > 0):
+                return 2
+            elif (self.marketChange[n] > -0.015):
+                return 1
+            else:
+                return 0
+        except:
             return 0
 
 class Features(object):

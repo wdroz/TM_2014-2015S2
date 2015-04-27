@@ -36,17 +36,21 @@ class DataSetMakerV2(object):
 
         self.labeledPointsRdd = self.featuresRDD.map(lambda x: LabeledPoint(x.giveClasseN(1), hashingTF.transform(x.words + x.bg2 + x.bg3)))
         
-        nbVeryPos = self.featuresRDD.filter(lambda x: x.giveClasseN(1) == 3).count()
-        nbPos = self.featuresRDD.filter(lambda x: x.giveClasseN(1) == 2).count()
-        nbNeg = self.featuresRDD.filter(lambda x: x.giveClasseN(1) == 1).count()
-        nbVeryNeg = self.featuresRDD.filter(lambda x: x.giveClasseN(1) == 0).count()
-        nbTot = self.featuresRDD.count()
+        try:
         
-        print("nbTot %d" % nbTot)
-        print("\tnbVeryPos %d" % nbVeryPos)
-        print("\tnbPos %d" % nbPos)
-        print("\tnbNeg %d" % nbNeg)
-        print("\tnbVeryNeg %d" % nbVeryNeg)
+            nbVeryPos = self.featuresRDD.filter(lambda x: x.giveClasseN(1) == 3).count()
+            nbPos = self.featuresRDD.filter(lambda x: x.giveClasseN(1) == 2).count()
+            nbNeg = self.featuresRDD.filter(lambda x: x.giveClasseN(1) == 1).count()
+            nbVeryNeg = self.featuresRDD.filter(lambda x: x.giveClasseN(1) == 0).count()
+            nbTot = self.featuresRDD.count()
+            
+            print("nbTot %d" % nbTot)
+            print("\tnbVeryPos %d" % nbVeryPos)
+            print("\tnbPos %d" % nbPos)
+            print("\tnbNeg %d" % nbNeg)
+            print("\tnbVeryNeg %d" % nbVeryNeg)
+        except:
+            pass # empty rdd
         
         return self.labeledPointsRdd
        

@@ -16,7 +16,6 @@ from ReutersNewsSource import ReutersNewsSourceHDFSV2
 from pyspark import SparkContext, SparkConf
 from GoogleFinanceMarketSource import GoogleFinanceMarketSourceSpark
 import pickle
-
 if __name__ == "__main__":
     conf = SparkConf()
     conf.set('spark.shuffle.blockTransferService', 'nio')
