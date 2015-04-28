@@ -17,8 +17,10 @@ from GoogleFinanceMarketSource import GoogleFinanceMarketSourceSpark
 from pyspark.streaming import StreamingContext
 from DataManager import News
 import pickle
+import requests
 from ast import literal_eval
 import datetime        
+from collections import defaultdict
 
 if __name__ == "__main__":
     conf = SparkConf()
@@ -55,7 +57,9 @@ if __name__ == "__main__":
             res = newsRDD.map(lambda x: (x, myClassifierOnevsOne.predict(x.features)))
             print('for each result...')
             for result in res.collect():
-                print('\tresult : %s' % str(result))
+                symbole = 'NASDAQ:GOOG'
+                requests.put('http://localhost:5000', data={'symbole' : symbole, 'label' : str(result[1])})
+                print('send ok')
         else:
             print('empty!')
     
