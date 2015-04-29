@@ -12,12 +12,16 @@ api = Api(app)
 
 predictions = {}
 
+classesMap = {'0' : 'very good', '1' : 'good', '2' : 'bad', '3' : 'very bad'}
+
 class PredictionsSimple(Resource):
     
     def put(self):
         symbole = request.form['symbole']
         predictions[symbole] = request.form['label']
-        return {symbole: predictions[symbole]}
+        res = {symbole: predictions[symbole]}
+        print('receive new predictions for %s with classes %s -> %s' %(symbole, predictions[symbole], classesMap[predictions[symbole]]))
+        return res 
 
 api.add_resource(PredictionsSimple, '/')
 

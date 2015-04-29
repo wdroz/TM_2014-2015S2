@@ -53,13 +53,14 @@ if __name__ == "__main__":
     def sendRecord(rdd):
         print('new try...')
         if(not rdd.isEmpty()):
-            newsRDD = dataSetMaker.process(rdd)
-            res = newsRDD.map(lambda x: (x, myClassifierOnevsOne.predict(x.features)))
+            newsRDD = dataSetMaker.processKeepNews(rdd)
+            res = newsRDD.map(lambda x: (x[0], myClassifierOnevsOne.predict(x[1].features)))
             print('for each result...')
             for result in res.collect():
-                symbole = 'NASDAQ:GOOG'
-                requests.put('http://localhost:5000', data={'symbole' : symbole, 'label' : str(result[1])})
+                symbole = result[0].symbole
+                r = requests.put('http://localhost:5000', data={'symbole' : symbole, 'label' : str(result[1])})
                 print('send ok')
+                print('receive %s' % str(r.text))
         else:
             print('empty!')
     
