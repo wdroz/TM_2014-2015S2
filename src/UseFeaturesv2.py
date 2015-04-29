@@ -26,6 +26,15 @@ class DataSetMakerV2(object):
     def __init__(self, n=10000):
         self.n = n
         
+    def processKeepNews(self, newsRDD):
+        hashingTF = HashingTF(self.n)
+        self.newsRDD = newsRDD
+        self.featuresRDD = newsRDD.map(lambda x: FeaturesV2(x))
+
+        self.labeledPointsRdd = self.featuresRDD.map(lambda x: (x.news, LabeledPoint(x.giveClasseN(1), hashingTF.transform(x.words + x.bg2 + x.bg3))))
+        
+        return self.labeledPointsRdd
+        
     def process(self, newsRDD):
         hashingTF = HashingTF(self.n)
         self.newsRDD = newsRDD
