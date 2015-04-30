@@ -99,7 +99,7 @@ def run():
     sc = SparkContext(conf=conf)
     
     symbolesRDD = sc.parallelize([('NASDAQ:GOOGL', ['GOOG', 'GOOGL', 'GOOGLE']), ('NASDAQ:NVDA', ['NVIDIA']), ('VTX:SCMN', ['SWISSCOM'])])
-    taskdt = 180
+    taskdt = 600
     running = True
     oldNewsRDD = None
     firstTime = True
