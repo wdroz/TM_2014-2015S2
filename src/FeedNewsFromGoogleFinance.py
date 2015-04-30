@@ -104,6 +104,7 @@ def run():
     oldNewsRDD = None
     firstTime = True
     intersectRDD = None
+    dataDirectory = 'hdfs://157.26.83.52/user/wdroz/stream2'
     while(running):
         today = datetime.datetime.now()
         yesterday = today - datetime.timedelta(days=1)
@@ -122,6 +123,7 @@ def run():
         
         try:
             sendRecord(intersectRDD)
+            #TODO save
         except:
             pass # empty rdd
                 
