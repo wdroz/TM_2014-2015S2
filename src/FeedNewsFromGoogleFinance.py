@@ -99,32 +99,34 @@ def run():
     sc = SparkContext(conf=conf)
     
     symbolesRDD = sc.parallelize([('NASDAQ:GOOGL', ['GOOG', 'GOOGL', 'GOOGLE']), ('NASDAQ:NVDA', ['NVIDIA']), ('VTX:SCMN', ['SWISSCOM'])])
-    taskdt = 20
+    taskdt = 180
     running = True
     oldNewsRDD = None
     firstTime = True
     intersectRDD = None
-    today = datetime.datetime.now()
-    yesterday = today - datetime.timedelta(days=1)
-    tomorrow = today + datetime.timedelta(days=1)
-    newsRDD = symbolesRDD.flatMap(lambda x: feed.lookingAt(x[0], today, tomorrow, x[1]))
-    if(firstTime):
-        firstTime = False
-        intersectRDD = newsRDD
-    else:
+    while(running):
+        today = datetime.datetime.now()
+        yesterday = today - datetime.timedelta(days=1)
+        tomorrow = today + datetime.timedelta(days=1)
+        newsRDD = symbolesRDD.flatMap(lambda x: feed.lookingAt(x[0], today, tomorrow, x[1]))
+        if(firstTime):
+            firstTime = False
+            intersectRDD = newsRDD
+        else:
+            try:
+                intersectRDD = oldNewsRDD.intersection(newsRDD)
+            except:
+                pass # empty rdd
+        
+        oldNewsRDD = newsRDD
+        
         try:
-            intersectRDD = oldNewsRDD.intersection(newsRDD)
+            sendRecord(intersectRDD)
         except:
             pass # empty rdd
-    
-    oldNewsRDD = newsRDD
-    
-    try:
-        sendRecord(intersectRDD)
-    except:
-        pass # empty rdd
-            
-    time.sleep(taskdt)
+                
+        time.sleep(taskdt)
+        
     running = False # TODO remove it
     
 
