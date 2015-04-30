@@ -46,9 +46,12 @@ class PredictionsSimple(Resource):
         predictions[symbole] = request.form['label']
         res = {symbole: predictions[symbole]}
         news = NewsPrediction()
-        news.__dict__ = json.loads(request.form['jdata'])
+        news.__dict__ = json.loads(request.form['jdata'].encode('utf-8'))
         print('receive new predictions for %s with classes %s -> %s' %(symbole, predictions[symbole], classesMap[predictions[symbole]]))
-        print(str(news))
+        try:        
+            print(str(news))
+        except:
+            pass # encoding issues
         return res 
 
 api.add_resource(PredictionsSimple, '/')
