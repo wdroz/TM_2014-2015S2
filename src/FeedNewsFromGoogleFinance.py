@@ -88,7 +88,7 @@ def run():
             print('for each result...')
             for result in res.collect():
                 symbole = result[0].symbole
-                r = requests.put('http://localhost:5000', data={'jdata' : NewsPrediction(result[0], str(result[1])).json(),  'symbole' : symbole, 'label' : str(result[1])})
+                r = requests.put('http://wtun.mooo.com:5000', data={'jdata' : NewsPrediction(result[0], str(result[1])).json(),  'symbole' : symbole, 'label' : str(result[1])})
                 print('send ok')
                 print('receive %s' % str(r.text))
         else:
