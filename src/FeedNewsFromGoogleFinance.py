@@ -7,7 +7,6 @@ Created on Wed Apr 29 13:27:05 2015
 
 import HTMLParser
 import re
-import requests
 import datetime
 
 from DataClassifier import DataClassifier, DataClassifierEvaluator
@@ -20,13 +19,12 @@ from ReutersNewsSource import ReutersNewsSourceHDFSV2
 from pyspark import SparkContext, SparkConf
 from GoogleFinanceMarketSource import GoogleFinanceMarketSourceSpark
 from pyspark.streaming import StreamingContext
-from DataManager import News
+from DataManager import News, NewsPrediction
 import pickle
 import requests
 from ast import literal_eval
 import datetime        
 from collections import defaultdict
-from PredictionsHandlerFlask import NewsPrediction
 import json
 import time
 
@@ -105,11 +103,12 @@ def run():
     firstTime = True
     intersectRDD = None
     dataDirectory = 'hdfs://157.26.83.52/user/wdroz/stream2'
+    cpt = 0
     while(running):
         today = datetime.datetime.now()
         yesterday = today - datetime.timedelta(days=1)
         tomorrow = today + datetime.timedelta(days=1)
-        newsRDD = symbolesRDD.flatMap(lambda x: feed.lookingAt(x[0], today, tomorrow, x[1]))
+        newsRDD = symbolesRDD.flatMap(lambda x: feed.lookingAt(x[0], yesterday, tomorrow, x[1]))
         if(firstTime):
             firstTime = False
             intersectRDD = newsRDD
@@ -126,6 +125,9 @@ def run():
             #TODO save
         except:
             pass # empty rdd
+            
+        intersectRDD.saveAsPickleFile(dataDirectory + '/' + datetime.datetime.now().strftime('%Y-%m-%d') + str(cpt))
+        cpt += 1
                 
         time.sleep(taskdt)
         
