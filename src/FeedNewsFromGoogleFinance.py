@@ -122,13 +122,11 @@ def run():
         
         try:
             sendRecord(intersectRDD)
-            #TODO save
+            intersectRDD.saveAsPickleFile(dataDirectory + '/' + datetime.datetime.now().strftime('%Y-%m-%d') + str(cpt))
+            cpt += 1
         except:
             pass # empty rdd
-            
-        intersectRDD.saveAsPickleFile(dataDirectory + '/' + datetime.datetime.now().strftime('%Y-%m-%d') + str(cpt))
-        cpt += 1
-                
+                   
         time.sleep(taskdt)
         
     running = False # TODO remove it
