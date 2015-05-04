@@ -8,6 +8,28 @@ Created on Mon Mar  9 12:54:03 2015
 import datetime
 import time
 import pickle
+import json
+
+class NewsPrediction(object):
+    def __init__(self, news=None, prediction=0):
+        try:
+            self.prediction = prediction
+            self.publication = news.publication
+            self.pubDate = str(news.pubDate)
+            self.pubSource = news.pubSource 
+            self.symbole = news.symbole
+        except:
+            pass # news is None
+        
+    def json(self):
+        return json.dumps(self.__dict__)
+        
+    def __str__(self):
+        myString = '---\n'
+        myString += '%s\t%s\t%s\tfrom %s\n' % (self.symbole, self.pubDate, self.publication, self.pubSource)
+        myString += '\tpredValue is %s\n' % self.prediction
+        myString += '---'
+        return myString
 
 class MarketStatus(object):
     '''
