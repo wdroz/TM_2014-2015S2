@@ -122,7 +122,7 @@ def run():
         
         try:
             sendRecord(intersectRDD)
-            intersectRDD.saveAsPickleFile(dataDirectory + '/' + datetime.datetime.now().strftime('%Y-%m-%d') + str(cpt))
+            intersectRDD.saveAsPickleFile(dataDirectory + '/' + datetime.datetime.now().strftime('%Y-%m-%d--') + str(cpt))
             cpt += 1
         except:
             pass # empty rdd

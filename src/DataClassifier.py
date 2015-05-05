@@ -120,6 +120,62 @@ class DataClassifierEvaluator(object):
         
         return left.union(right), middle
         
+    def _meanMatrix(self, matrixList):
+        nbMatrix = len(matrixList)
+        newMatrix = []
+        matrixSize = len(matrixList[0])
+        for index in range(matrixSize):
+            line = []
+            for classes in range(matrixSize):
+                mean = sum([x[index][classes]/float(nbMatrix) for x in matrixList])
+                line.append(mean)
+            newMatrix.append(line)
+        return newMatrix
+            
+        
+    def _showMatrix(self, matrix):
+        matrixSize = len(matrix)
+        chaine = '\t' + '\t'.join([str(x) for x in range(matrixSize)])
+        chaine += '\n'
+        for real in range(matrixSize):
+            chaine += '%d\t' % real
+            nbTrue = 0
+            nbFalse = 0
+            for predict in range(matrixSize):
+                chaine += '%d\t' % matrix[real][predict]
+                if(real == predict):
+                    nbTrue += matrix[real][predict]
+                else:
+                    nbFalse += matrix[real][predict]
+            prec = nbTrue/float(nbTrue + nbFalse)
+            chaine += 'prec : %f\n' % prec
+        print(chaine)
+        return chaine
+        
+    def _createConfusionMatrix(self, evaluatorRdd):
+        '''
+        ex :
+           0   1   2   3
+        0 40   2   0  10
+        
+        1  2  38   3   2
+        
+        2  0   0   45  3
+        
+        3  3   0   12 29
+        '''
+        nbClasses = 4 # TODO change me
+        matrix = []
+        for realClasse in range(nbClasses):
+            line = []
+            for predictedClass in range(nbClasses):
+                try:
+                    line.append(evaluatorRdd.filter(lambda (a, b): a == realClasse and b == predictedClass).count())
+                except:
+                    line.append(0)
+            matrix.append(line)
+        return matrix
+        
     def _results(self, evaluatorRdd):
         print('evaluatorRdd size : %d' % evaluatorRdd.count())
         rddOK = evaluatorRdd.filter(lambda (a, b): a == b)
@@ -154,6 +210,7 @@ class DataClassifierEvaluator(object):
             dicoPrec[name] = {'min' : 1.0, 'max' : 0.0, 'mean' : []}
         aSplit = [1 for x in range(0,nbSplits)]
         rdds = self.dataset.randomSplit(aSplit,random.randint(1,100000))
+        matrixList = []
         for cpt in range(0, nbSplits):
             MessageManager.debugMessage("DataClassifierEvaluator : start new cross-validation iteration %d/%d" % (cpt+1, nbSplits))
             trainSet ,testSet = self._giveTrainAndtest(rdds, cpt)
@@ -165,6 +222,9 @@ class DataClassifierEvaluator(object):
                 currentModel = DataClassifier(None, classifier)
                 currentModel.train(trainSet)
                 evaluatorRdd = testSet.map(lambda p: (p.label, currentModel.predict(p.features)))
+                matrix = self._createConfusionMatrix(evaluatorRdd)
+                matrixList.append(matrix)
+                self._showMatrix(matrix)
                 prec = self._results(evaluatorRdd)
                 if(prec < dicoPrec[name]['min']):
                     dicoPrec[name]['min'] = prec
@@ -173,6 +233,8 @@ class DataClassifierEvaluator(object):
                 dicoPrec[name]['mean'].append(prec)
             print('=== Result of iteration ===')
             self.showResultConsole(dicoPrec)
+        print('+++=== mean confusion matrix ===+++')
+        self._showMatrix(self._meanMatrix(matrixList))
         print('+++=== Final Result ===+++')
         return self.showResultConsole(dicoPrec)
         
