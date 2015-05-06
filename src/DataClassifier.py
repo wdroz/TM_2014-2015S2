@@ -152,6 +152,12 @@ class DataClassifierEvaluator(object):
         print(chaine)
         return chaine
         
+    def _determineNbClasses(self, rdd):
+        try:
+            return rdd.map(lambda (a,b): a).distinct().count()
+        except:
+            return 4 # because fuck spark
+        
     def _createConfusionMatrix(self, evaluatorRdd):
         '''
         ex :
@@ -164,7 +170,8 @@ class DataClassifierEvaluator(object):
         
         3  3   0   12 29
         '''
-        nbClasses = 4 # TODO change me
+        #nbClasses = 4 # TODO change me
+        nbClasses = self._determineNbClasses(evaluatorRdd)
         matrix = []
         for realClasse in range(nbClasses):
             line = []
