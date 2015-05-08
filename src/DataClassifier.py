@@ -96,6 +96,7 @@ class DataClassifierEvaluator(object):
     def __init__(self, dataset):
         self.dataset = dataset
         self.classifier = []
+        self.matrixConfusion = None
         
     def addModel(self, classifier, name=''):
         if(name == ''):
@@ -221,8 +222,8 @@ class DataClassifierEvaluator(object):
         for cpt in range(0, nbSplits):
             MessageManager.debugMessage("DataClassifierEvaluator : start new cross-validation iteration %d/%d" % (cpt+1, nbSplits))
             trainSet ,testSet = self._giveTrainAndtest(rdds, cpt)
-            one = trainSet.take(1)[0]
-            print('size of vect : %d' % len(one.features))
+            #one = trainSet.take(1)[0]
+            #print('size of vect : %d' % len(one.features))
             print('trainset size : %d' % trainSet.count())
             print('testset size : %d' % testSet.count())
             for (classifier, name) in self.classifier:
@@ -241,7 +242,8 @@ class DataClassifierEvaluator(object):
             print('=== Result of iteration ===')
             self.showResultConsole(dicoPrec)
         print('+++=== mean confusion matrix ===+++')
-        self._showMatrix(self._meanMatrix(matrixList))
+        self.matrixConfusion = self._meanMatrix(matrixList)
+        self._showMatrix(self.matrixConfusion)
         print('+++=== Final Result ===+++')
         return self.showResultConsole(dicoPrec)
         
