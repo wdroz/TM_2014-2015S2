@@ -59,6 +59,7 @@ class DataClassifier(object):
             # cheat because we can't use self.predict in a map here...
             toto = DataClassifier(None,self.classifier)            
             toto.train(trainSet)
+            #TODO test here
             evaluatorRdd = testSet.map(lambda p: (p.label, toto.predict(p.features)))
             #evaluatorRdd = testSet.map(lambda p: (p.label, 1))
             print('evaluatorRdd size : %d' % evaluatorRdd.count())
@@ -229,7 +230,9 @@ class DataClassifierEvaluator(object):
             for (classifier, name) in self.classifier:
                 currentModel = DataClassifier(None, classifier)
                 currentModel.train(trainSet)
-                evaluatorRdd = testSet.map(lambda p: (p.label, currentModel.predict(p.features)))
+                def f(iterator): yield ((p.label, currentModel.predict(p.features)) for p in iterator)
+                #evaluatorRdd = testSet.mapPartitions(lambda p: (p.label, currentModel.predict(p.features)))
+                evaluatorRdd = testSet.mapPartitions(f).flatMap(lambda x: x)
                 matrix = self._createConfusionMatrix(evaluatorRdd)
                 matrixList.append(matrix)
                 self._showMatrix(matrix)
