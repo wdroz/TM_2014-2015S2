@@ -35,7 +35,7 @@ if __name__ == "__main__":
     #plot_confusion_matrix(cm)
     
     conf = SparkConf()
-    conf.set('spark.shuffle.blockTransferService', 'nio')
+    #conf.set('spark.shuffle.blockTransferService', 'nio')
     conf.set('spark.files.fetchTimeout', '180')
     conf.set('spark.files.overwrite', 'yes')
     conf.set('spark.akka.timeout', '180')
@@ -47,7 +47,7 @@ if __name__ == "__main__":
     sc = SparkContext(conf=conf)
     #toto = DataClassifierMultiClasses(SVMWithSGD, 5)
     #path = '/media/droz/KIKOOLOL HDD/Corpus/headlines-docs.csv'
-    path = 'hdfs://157.26.83.52/user/wdroz/headlines-docs.csv'    
+    path = 'hdfs://157.26.83.52/user/wdroz/tail-headlines-docs.csv'    
     fileRdd = sc.textFile(path, use_unicode=False)
     newSource = ReutersNewsSourceHDFSV2(fileRdd)
 
