@@ -16,7 +16,7 @@ api = Api(app)
 
 predictions = {}
 
-classesMap = {'0' : 'very good', '1' : 'good', '2' : 'bad', '3' : 'very bad'}
+classesMap = {'3' : 'very good', '2' : 'good', '1' : 'bad', '0' : 'very bad'}
 
 class PredictionsSimple(Resource):
     
