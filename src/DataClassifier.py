@@ -146,9 +146,9 @@ class DataClassifierEvaluator(object):
             for predict in range(matrixSize):
                 chaine += '%d\t' % matrix[real][predict]
                 if(real == predict):
-                    nbTrue += 1
+                    nbTrue += matrix[real][predict]
                 else:
-                    nbFalse += 1
+                    nbFalse += matrix[real][predict]
             prec = nbTrue/float(nbTrue + nbFalse)
             chaine += 'prec : %f\n' % prec
         print(chaine)
