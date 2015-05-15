@@ -54,10 +54,10 @@ class DataSetMakerV2(object):
             nbTot = self.featuresRDD.count()
             
             print("nbTot %d" % nbTot)
-            print("\tnbVeryPos %d" % nbVeryPos)
-            print("\tnbPos %d" % nbPos)
-            print("\tnbNeg %d" % nbNeg)
             print("\tnbVeryNeg %d" % nbVeryNeg)
+            print("\tnbNeg %d" % nbNeg)
+            print("\tnbPos %d" % nbPos)
+            print("\tnbVeryPos %d" % nbVeryPos)
         except:
             pass # empty rdd
         
