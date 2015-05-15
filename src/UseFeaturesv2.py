@@ -35,6 +35,30 @@ class DataSetMakerV2(object):
         
         return self.labeledPointsRdd
         
+    def processBinary(self, newsRDD):
+        hashingTF = HashingTF(self.n)
+        self.newsRDD = newsRDD
+        self.featuresRDD = newsRDD.map(lambda x: FeaturesV2(x))
+        
+        #toto = self.featuresRDD.take(1)[0]
+        #print(toto.words + toto.bg2 + toto.bg3)
+
+        self.labeledPointsRdd = self.featuresRDD.map(lambda x: LabeledPoint(x.isGoodN(1), hashingTF.transform(x.words + x.bg2 + x.bg3)))
+        
+        try:
+            nbPos = self.featuresRDD.filter(lambda x: x.isGoodN(1) == True).count()
+            nbNeg = self.featuresRDD.filter(lambda x: x.isGoodN(1) == False).count()
+           
+            nbTot = self.featuresRDD.count()
+            
+            print("nbTot %d" % nbTot)
+            print("\tnbNeg %d" % nbNeg)
+            print("\tnbPos %d" % nbPos)
+        except:
+            pass # empty rdd
+        
+        return self.labeledPointsRdd
+        
     def process(self, newsRDD):
         hashingTF = HashingTF(self.n)
         self.newsRDD = newsRDD
