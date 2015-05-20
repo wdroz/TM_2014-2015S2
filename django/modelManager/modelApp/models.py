@@ -25,3 +25,16 @@ class Keyword (models.Model):
     def __unicode__(self):
         return self.keyword
     
+class PredictGraph(models.Model):
+    predictModel = models.ForeignKey(PredictModel)
+    
+    def __unicode__(self):
+        return 'graph for ' + self.predictModel.name
+        
+class PredictPoint(models.Model):
+    # TODO check format
+    newsPubDate = models.DateTimeField()
+    newsSource = models.CharField(max_length=200)
+    newsText = models.TextField()
+    predictScore = models.FloatField()
+    predictGraph = models.ForeignKey(PredictGraph)
