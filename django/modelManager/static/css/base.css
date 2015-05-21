@@ -1,0 +1,22 @@
+#nav {  
+    padding: 0; margin: 0;  
+    text-align: center;
+    background-color : #785E2F;
+    border-radius:1em;
+    font-size: 2em;
+}  
+#nav li {  
+    display: inline;  
+    list-style: none;  
+}  
+#nav a {  
+    display:inline-block;  
+    margin: 0 30px;  
+}  
+
+#main_content {
+    width : 1000px;
+    height:100%;
+    margin : 0 auto;
+    border-radius:2em;
+}
