@@ -1,8 +1,7 @@
 {% extends 'base.html' %}
 {% block main_content %}
-<h1>show models</h1>
-    {% for model in models %}
-        <p><a href="/prediction/{{ model.name }}">{{ model.name }}</a></p>
+<h1>show model prediction</h1>
+        <p>{{ model.name }}</p>
         <ul>
         {% for entry in model.entry_set.all %}
             <li>{{ entry.name }}</li>
@@ -20,6 +19,17 @@
             </li>            
             </ul>
         {% endfor %}
-    {% endfor %}
+        </ul>
+        <p>graphes</p>
+        {% for graph in model.predictgraph_set.all %}
+            <div>
+            {{ graph }}
+            <ul>
+            {% for point in graph.predictpoint_set.all %}
+                <li>{{ point }}</li>
+            {% endfor %}
+            </ul>
+            </div>
+        {% endfor %}
 {% endblock %}
 

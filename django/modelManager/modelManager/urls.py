@@ -21,4 +21,5 @@ urlpatterns = [
     url(r'^$', views.index),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^showmodels/', views.showModels),
+    url(r'^prediction/(?P<model_name>.+)', views.prediction),
 ]
