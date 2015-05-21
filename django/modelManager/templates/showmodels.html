@@ -1,5 +1,26 @@
 {% extends 'base.html' %}
 {% block main_content %}
 <h1>show models</h1>
+    {% for model in models %}
+        <p>{{ model.name }}</p>
+        <ul>
+        {% for entry in model.entry_set.all %}
+            <li>{{ entry.name }}</li>
+            <ul>
+            <li> List of symboles
+            {% for symbole in entry.symbole_set.all %}
+                <span>{{ symbole.symbole }}</span>
+            {% endfor %}
+            </li>
+            <li>
+            List of keywords
+            {% for keyword in entry.keyword_set.all %}
+                <span>{{ keyword.keyword }}</span>
+            {% endfor %}
+            </li>            
+            </ul>
+        {% endfor %}
+        </ul>
+    {% endfor %}
 {% endblock %}
 
