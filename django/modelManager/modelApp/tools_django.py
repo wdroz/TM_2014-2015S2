@@ -21,13 +21,13 @@ def matrix_normalize(matrix):
     
 def predictPointToList(predictPoints, hours=48, numberOfX=12):
     #end = datetime.now()
-    end = timezone.now()    
+    end = timezone.now() + timedelta(hours=0) #TODO check real hour
     start = end - timedelta(hours=hours)
     nbInLine = []
     for i in range(numberOfX):
         nbInLine.append(0)
     # interpolate and make bins
-    dx = hours/numberOfX
+    dx = hours/float(numberOfX-1)
     for p in predictPoints:
         if(p.newsPubDate <= end and p.newsPubDate >= start):
             for i in range(numberOfX):

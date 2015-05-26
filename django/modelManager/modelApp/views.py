@@ -17,17 +17,17 @@ def showModels(request):
     return render(request, 'showmodels.html', {'models' : myPredictModels})
         
 def graph(request, graph_name):
-    hours = 36
+    hours = 48
     numberOfX = 4
     
     graph = PredictGraph.objects.get(name=graph_name)
     
     #end = datetime.now()
-    end = timezone.now()    
+    end = timezone.now()
     start = end - timedelta(hours=hours)
 
     labels = []
-    dx = hours/numberOfX
+    dx = hours/float(numberOfX-1)
     for i in range(numberOfX):
         labels.append(str(start + timedelta(hours=dx*i)))
     stackedline_chart = pygal.StackedLine(fill=True, x_label_rotation=30)
@@ -40,9 +40,9 @@ def graph(request, graph_name):
     matrix_normalize([veryBad, bad, good, veryGood])
 
     stackedline_chart.add('Very bad', veryBad)
-    stackedline_chart.add('Bad',  bad)
-    stackedline_chart.add('Good',      good)
-    stackedline_chart.add('Very good',  veryGood)
+    stackedline_chart.add('Bad', bad)
+    stackedline_chart.add('Good', good)
+    stackedline_chart.add('Very good', veryGood)
     return HttpResponse(stackedline_chart.render()) 
     #stackedline_chart.render()
     
