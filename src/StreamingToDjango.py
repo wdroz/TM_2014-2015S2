@@ -74,11 +74,11 @@ class StreamingToDjango(object):
         return myClassifierOnevsOne
     
     @staticmethod
-    def save_model(self, model_name, model):
+    def save_model(model_name, model):
         pickle.dump(model, open(model_name, 'wb'))
     
     @staticmethod
-    def get_symboles_and_keywords(self, model_name):
+    def get_symboles_and_keywords(model_name):
         '''
         Ask Django for symboles and keywords from model_name for
         train a new model.
