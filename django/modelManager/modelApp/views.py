@@ -92,9 +92,9 @@ def addPoint(request, graph_name):
         return HttpResponse('')
     try:
         myPredictGraph = PredictGraph.objects.get(name=graph_name)
-        point = literal_eval(request.GET['point']) # no security
+        point = request.POST # no security
         newPoint = PredictPoint(newsPubDate=point['newsPubDate'], newsSource=point['newsSource'], newsText=['newsText'], predictScore=point['predictScore'], predictGraph=myPredictGraph)
         newPoint.save()
         return HttpResponse('OK')
-    except:
-        return HttpResponse('') # TODO better error
+    except Exception as e:
+            return HttpResponse(str(e)) # TODO improve error
