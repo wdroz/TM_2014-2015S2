@@ -44,15 +44,15 @@ class StreamingToDjango(object):
         fileRdd = sc.textFile(path, use_unicode=False)
         newSource = ReutersNewsSourceHDFSV2(fileRdd)
     
+        myList = StreamingToDjango.get_symboles_and_keywords(model_name)        
+        symboles = []
+        for entry in myList:
+            newSource.lookingAll(entry['symboles'][0], entry['keywords'])
+            symboles.append(entry['symboles'][0])
         # change by using model symboles and keywords
-        newSource.lookingAll('NASDAQ:GOOGL', ['GOOG', 'GOOGL', 'GOOGLE'])
-        newSource.lookingAll('NASDAQ:NVDA', ['NVIDIA'])
-        newSource.lookingAll('VTX:NESN', ['NESTLE'])
-        newSource.lookingAll('VTX:SCMN', ['SWISSCOM'])
-        newSource.lookingAll('VTX:NOVN', ['NOVARTIS'])
         
         newsRDD = newSource.doIt()
-        marketSource = GoogleFinanceMarketSourceSpark(['NASDAQ:GOOGL', 'NASDAQ:NVDA', 'VTX:NESN', 'VTX:SCMN', 'VTX:NOVN'])
+        marketSource = GoogleFinanceMarketSourceSpark(symboles)
         newsRDD = newsRDD.map(lambda x: marketSource.addMarketStatusToNews(x))
         #newsRDD = newsRDD.randomSplit([1,1,1,1,1,1,1,1,1,1,1,1,1,1,1])[0]
         # send reading corpus and add marketStatus
@@ -76,6 +76,10 @@ class StreamingToDjango(object):
     @staticmethod
     def save_model(model_name, model):
         pickle.dump(model, open(model_name, 'wb'))
+        
+    @staticmethod    
+    def get_streaming_symbole(graph_model):
+        pass
     
     @staticmethod
     def get_symboles_and_keywords(model_name):
@@ -83,7 +87,17 @@ class StreamingToDjango(object):
         Ask Django for symboles and keywords from model_name for
         train a new model.
         '''
-        pass
+        import requests
+        from ast import literal_eval
+        try:
+            print('try request for symoles and keywords')
+            url = config.DJANGO_CONF['url'] + '/' + config.DJANGO_CONF['trainEntry'] + '/' + model_name
+            r = requests.get(url)
+            myList = literal_eval(r.text)
+            return myList
+        except Exception as e:
+            print('exception!!! %s' % str(e))
+            return [] # TOTO better error
     
     def stream(self):
         conf = config.load_spark_conf()
@@ -92,5 +106,5 @@ class StreamingToDjango(object):
         # TODO stream
         
 if __name__ == '__main__':
-    stream = StreamingToDjango('abc','def')
+    stream = StreamingToDjango('Mon premier model','Predict Google')
     stream.stream()
