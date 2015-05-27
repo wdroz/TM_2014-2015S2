@@ -28,7 +28,7 @@ from collections import defaultdict
 import json
 import time
 
-class FeedNewsfromGoogleFinance(object):
+class FeedNewsFromGoogleFinance(object):
     def __init__(self):
         self.url = 'https://www.google.com/finance/company_news'
         self.expNews = '<div style="width:100%;">([^/]+)</div>'
@@ -61,7 +61,7 @@ class FeedNewsfromGoogleFinance(object):
                 except:
                     recentNews.append(News(pubDate=datetime.datetime.now(), symbole=symbole, publication=quotes[cpt], pubSource=sources[cpt]))
             params['start'] += self.num
-            
+        print('nb news found: %d' % len(recentNews))    
         return recentNews
 
 def run():
@@ -78,7 +78,7 @@ def run():
     
     dataSetMaker = DataSetMakerV2(n=200000)
     
-    feed = FeedNewsfromGoogleFinance()
+    feed = FeedNewsFromGoogleFinance()
     
     def sendRecord(rdd):
         print('new try...')
