@@ -7,6 +7,7 @@ Created on Fri May 22 13:31:15 2015
 from datetime import timedelta
 from django.utils import timezone
 def matrix_normalize(matrix):
+    return matrix
     w = len(matrix)
     h = len(matrix[0])
     for y in range(h):
@@ -21,7 +22,7 @@ def matrix_normalize(matrix):
     
 def predictPointToList(predictPoints, hours=48, numberOfX=12):
     #end = datetime.now()
-    end = timezone.now() + timedelta(hours=0) #TODO check real hour
+    end = timezone.now() + timedelta(hours=2) # because timezone sucks
     start = end - timedelta(hours=hours)
     nbInLine = []
     for i in range(numberOfX):

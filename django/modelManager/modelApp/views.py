@@ -25,7 +25,7 @@ def graph(request, graph_name):
     graph = PredictGraph.objects.get(name=graph_name)
     
     #end = datetime.now()
-    end = timezone.now()
+    end = timezone.now() + timedelta(hours=2)
     start = end - timedelta(hours=hours)
 
     labels = []
