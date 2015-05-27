@@ -8,15 +8,23 @@ Created on Tue May 26 10:25:48 2015
 from os.path import isfile
 import pickle
 import config
+import requests
+from ast import literal_eval
+import time
+import datetime
+
 from pyspark import SparkContext
 from GoogleFinanceMarketSource import GoogleFinanceMarketSourceSpark
 from ReutersNewsSource import ReutersNewsSourceHDFSV2
 from UseFeaturesv2 import DataSetMakerV2
 from DataClassifierV2 import DataClassifierMultiClassesOneVsOne
+from FeedNewsFromGoogleFinance import FeedNewsFromGoogleFinance
 
 class StreamingToDjango(object):
     def __init__(self, model_name, graph_name):
         self.model = StreamingToDjango.load_model(model_name)
+        self.model_name = model_name
+        self.graph_name = graph_name
     
     @staticmethod
     def load_model(model_name):
@@ -75,11 +83,23 @@ class StreamingToDjango(object):
     
     @staticmethod
     def save_model(model_name, model):
-        pickle.dump(model, open(model_name, 'wb'))
+        pickle.dump(model, open(model_name, 'wb'), pickle.HIGHEST_PROTOCOL)
         
     @staticmethod    
-    def get_streaming_symbole(graph_model):
-        pass
+    def get_streaming_symbole(graph_name):
+        '''
+        Ask Django for symbole from graph_name for
+        streaming
+        '''
+        try:
+            print('try request for symole')
+            url = config.DJANGO_CONF['url'] + '/' + config.DJANGO_CONF['streamSymbole'] + '/' + graph_name
+            r = requests.get(url)
+            myString = str(r.text)
+            return myString
+        except Exception as e:
+            print('exception!!! %s' % str(e))
+            return '' # TOTO better error
     
     @staticmethod
     def get_symboles_and_keywords(model_name):
@@ -87,8 +107,6 @@ class StreamingToDjango(object):
         Ask Django for symboles and keywords from model_name for
         train a new model.
         '''
-        import requests
-        from ast import literal_eval
         try:
             print('try request for symoles and keywords')
             url = config.DJANGO_CONF['url'] + '/' + config.DJANGO_CONF['trainEntry'] + '/' + model_name
@@ -100,10 +118,78 @@ class StreamingToDjango(object):
             return [] # TOTO better error
     
     def stream(self):
+        
         conf = config.load_spark_conf()
         sc = SparkContext(conf=conf)
         print('stream')
-        # TODO stream
+        
+        dataSetMaker = DataSetMakerV2(n=config.FEATURES_CONF['vecteur_size'])
+        
+        feed = FeedNewsFromGoogleFinance()
+
+        model = self.model
+        
+        def sendRecordToDjango(rdd):
+            print('new try...')
+            if(not rdd.isEmpty()):
+                print('before process')
+                newsRDD = dataSetMaker.processKeepNews(rdd)
+                print('before res = ')
+                res = newsRDD.map(lambda x: (x[0], model.predict(x[1].features)))
+                print('afkter res = ')
+                print('res size : %d' % res.count())
+                print('for each result...')
+                for result in res.collect():
+                    print('...')
+                    symbole = result[0].symbole
+                    url = config.DJANGO_CONF['url'] + '/' + config.DJANGO_CONF['addPoint'] + '/' + self.graph_name
+                    #newsPubDate=point['newsPubDate'], newsSource=point['newsSource'], newsText=['newsText'], predictScore=point['predictScore'], predictGraph=myPredictGraph
+                    myDict = {'newsPubDate' : result[0].pubDate, 'newsSource' : result[0].pubSource, 'newsText' : result[0].publication, 'predictScore' : result[1]}
+                    r = requests.post(url, data=myDict)
+                    print('send ok')
+                    print('receive %s' % str(r.text))
+            else:
+                print('empty!')
+                
+        #symboles = ['NASDAQ:GOOGL']
+        symboles = [StreamingToDjango.get_streaming_symbole(self.graph_name)]        
+        symbolesRDD = sc.parallelize(symboles)
+        taskdt = 600
+        running = True
+        oldNewsRDD = None
+        firstTime = True
+        intersectRDD = None
+        dataDirectory = 'hdfs://157.26.83.52/user/wdroz/stream2'
+        cpt = 0
+        while(running):
+            today = datetime.datetime.now()
+            yesterday = today - datetime.timedelta(days=1)
+            tomorrow = today + datetime.timedelta(days=1)
+            newsRDD = symbolesRDD.flatMap(lambda x: feed.lookingAt(x, yesterday, tomorrow, []))
+            if(firstTime):
+                firstTime = False
+                intersectRDD = newsRDD
+            else:
+                try:
+                    intersectRDD = oldNewsRDD.intersection(newsRDD)
+                except:
+                    pass # empty rdd
+            
+            oldNewsRDD = newsRDD
+            sendRecordToDjango(intersectRDD)
+            try:
+                #sendRecordToDjango(intersectRDD)
+                print('after send record To django')
+                intersectRDD.saveAsPickleFile(dataDirectory + '/' + datetime.datetime.now().strftime('%Y-%m-%d--') + str(cpt))
+                cpt += 1
+            except Exception as e:
+                print('MEGA EXCEPTION!!! %s' % str(e))
+                pass # empty rdd
+            print('sleep')           
+            time.sleep(taskdt)
+            print('wake up')
+            
+        running = True # TODO remove it
         
 if __name__ == '__main__':
     stream = StreamingToDjango('Mon premier model','Predict Google')
