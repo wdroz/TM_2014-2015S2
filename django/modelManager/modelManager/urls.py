@@ -22,4 +22,8 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^showmodels/', views.showModels),
     url(r'^prediction/(?P<model_name>.+)', views.prediction),
+    url(r'^graph/(?P<graph_name>.+)', views.graph),
+    url(r'^addPoint/(?P<graph_name>.+)', views.addPoint),
+    url(r'^getStreamingSymbole/(?P<graph_name>.+)', views.getStreamingSymbole),
+    url(r'^getTrainingEntry/(?P<model_name>.+)', views.getTrainingEntry),
 ]
