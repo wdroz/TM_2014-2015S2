@@ -14,7 +14,8 @@ FEATURES_CONF = {
 }
 
 DJANGO_CONF = {
-    'url' : 'http://127.0.0.1:8000',
+    #'url' : 'http://127.0.0.1:8000',
+    'url' : 'http://157.26.64.16:8000',
     'addPoint' : 'addPoint',
     'trainStatus' : 'trainStatus',
     'streamStatus' : 'streamStatus',
