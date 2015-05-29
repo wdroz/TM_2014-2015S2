@@ -93,7 +93,7 @@ def addPoint(request, graph_name):
     try:
         myPredictGraph = PredictGraph.objects.get(name=graph_name)
         point = request.POST # no security
-        newPoint = PredictPoint(newsPubDate=point['newsPubDate'], newsSource=point['newsSource'], newsText=['newsText'], predictScore=point['predictScore'], predictGraph=myPredictGraph)
+        newPoint = PredictPoint(newsPubDate=point['newsPubDate'], newsSource=point['newsSource'], newsText=point['newsText'], predictScore=point['predictScore'], predictGraph=myPredictGraph)
         newPoint.save()
         return HttpResponse('OK')
     except Exception as e:
