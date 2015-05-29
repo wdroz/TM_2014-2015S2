@@ -26,10 +26,11 @@ class Keyword (models.Model):
         return self.keyword
     
 class PredictGraph(models.Model):
+    name = models.CharField(max_length=200)
     predictModel = models.ForeignKey(PredictModel)
-    
+    symbole = models.CharField(max_length=200)
     def __unicode__(self):
-        return 'graph for ' + self.predictModel.name
+        return 'graph for %s with %s' % (self.predictModel.name, self.symbole)
         
 class PredictPoint(models.Model):
     # TODO check format
@@ -38,3 +39,5 @@ class PredictPoint(models.Model):
     newsText = models.TextField()
     predictScore = models.FloatField()
     predictGraph = models.ForeignKey(PredictGraph)
+    def __unicode__(self):
+        return '[%s]news from %s : %s... with score %f' % (str(self.newsPubDate), self.newsSource, self.newsText[:50], self.predictScore)
