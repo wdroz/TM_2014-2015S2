@@ -59,7 +59,7 @@ class FeedNewsFromGoogleFinance(object):
                     recentNews.append(News(pubDate=date, symbole=symbole, publication=quotes[cpt], pubSource=sources[cpt]))
                     print('sources : %s' % sources)
                 except:
-                    recentNews.append(News(pubDate=datetime.datetime.now(), symbole=symbole, publication=quotes[cpt], pubSource=sources[cpt]))
+                    recentNews.append(News(pubDate=datetime.datetime.now(), symbole=symbole, publication=quotes[cpt], pubSource=sources[cpt], resetTime=False))
             params['start'] += self.num
         print('nb news found: %d' % len(recentNews))    
         return recentNews
