@@ -22,14 +22,15 @@
         </ul>
         <p>graphes</p>
         {% for graph in model.predictgraph_set.all %}
-            <div>
             {{ graph }}
+            <figure>
+              <embed type="image/svg+xml" src="/graph/{{ graph.name }}" width="600" height="480" />
+            </figure>
             <ul>
             {% for point in graph.predictpoint_set.all %}
                 <li>{{ point }}</li>
             {% endfor %}
             </ul>
-            </div>
         {% endfor %}
 {% endblock %}
 
