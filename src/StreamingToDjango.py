@@ -159,7 +159,7 @@ class StreamingToDjango(object):
         oldNewsRDD = None
         firstTime = True
         intersectRDD = None
-        dataDirectory = 'hdfs://157.26.83.52/user/wdroz/stream2'
+        dataDirectory = config.FEATURES_CONF['hdfs'] + '/' + config.FEATURES_CONF['streamSave']
         cpt = 0
         while(running):
             today = datetime.datetime.now()

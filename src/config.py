@@ -7,6 +7,7 @@ Created on Tue May 26 13:34:40 2015
 
 FEATURES_CONF = {
     'hdfs' : 'hdfs://157.26.83.52',
+    'streamSave' : 'user/wdroz/stream2',
     'headlines' : 'user/wdroz/headlines-docs.csv',
     'vecteur_size' : 200000,
     'nb_classes' : 4,
@@ -17,6 +18,8 @@ DJANGO_CONF = {
     'addPoint' : 'addPoint',
     'trainStatus' : 'trainStatus',
     'streamStatus' : 'streamStatus',
+    'streamSymbole' : 'getStreamingSymbole',
+    'trainEntry' : 'getTrainingEntry',
 }
 
 def load_spark_conf():
