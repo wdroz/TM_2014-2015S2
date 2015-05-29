@@ -12,6 +12,7 @@ import requests
 from ast import literal_eval
 import time
 import datetime
+import sys
 
 from pyspark import SparkContext
 from GoogleFinanceMarketSource import GoogleFinanceMarketSourceSpark
@@ -192,5 +193,7 @@ class StreamingToDjango(object):
         running = True # TODO remove it
         
 if __name__ == '__main__':
-    stream = StreamingToDjango('Mon premier model','Predict Google')
+    model = sys.argv[1]
+    graph = sys.argv[2]
+    stream = StreamingToDjango(model,graph)
     stream.stream()
