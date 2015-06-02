@@ -5,7 +5,7 @@ server=157.26.83.52
 tmpZipList=zipList.txt
 ./createZips.sh
 scp *.zip $main $user@$server:~
-scp ../src/*.p $main $user@$server:~
+#scp ../src/*.p $main $user@$server:~
 ls -1 *.zip > $tmpZipList
 zipString=""
 while read line
