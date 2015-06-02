@@ -17,7 +17,7 @@ from GoogleFinanceMarketSource import GoogleFinanceMarketSourceSpark
 
 if __name__ == "__main__":
     conf = SparkConf()
-    conf.set('spark.shuffle.blockTransferService', 'nio')
+    #conf.set('spark.shuffle.blockTransferService', 'nio')
     conf.set('spark.files.fetchTimeout', '180')
     conf.set('spark.files.overwrite', 'yes')
     conf.set('spark.akka.timeout', '180')

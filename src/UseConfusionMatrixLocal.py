@@ -47,7 +47,7 @@ if __name__ == "__main__":
     sc = SparkContext(conf=conf)
     #toto = DataClassifierMultiClasses(SVMWithSGD, 5)
     #path = '/media/droz/KIKOOLOL HDD/Corpus/headlines-docs.csv'
-    path = 'hdfs://157.26.83.52/user/wdroz/tail-headlines-docs.csv'    
+    path = 'hdfs://157.26.83.52/user/wdroz/mini-headlines-docs.csv'    
     fileRdd = sc.textFile(path, use_unicode=False)
     newSource = ReutersNewsSourceHDFSV2(fileRdd)
 
@@ -64,7 +64,7 @@ if __name__ == "__main__":
     newsRDD.cache()
     print('nb news : %d' % newsRDD.count())
     dataSetMaker = DataSetMakerV2(n=200000)
-    fullDataSet = dataSetMaker.process(newsRDD)
+    fullDataSet = dataSetMaker.processBinary(newsRDD)
     fullDataSet.cache()
     myClassifier = ClassifiersWrapper()
     myClassifier.addClassifier(classifier=SVMWithSGD, trainParameters={}, weight=0.3)
@@ -83,7 +83,8 @@ if __name__ == "__main__":
     myClassifierOnevsOne = DataClassifierMultiClassesOneVsOne(myClassifier, 4)
     myClassifierOnevsMany = DataClassifierMultiClassesOneVsMany(myClassifier2, 4)
     #dataClassifierEvaluator.addModel(myClassifierOnevsMany, 'myClassifierOnevsMany')
-    dataClassifierEvaluator.addModel(myClassifierOnevsOne, 'myClassifierOnevsOne')
+    #dataClassifierEvaluator.addModel(myClassifierOnevsOne, 'myClassifierOnevsOne')
+    dataClassifierEvaluator.addModel(myClassifier, 'myClassifier')
     #dataClassifierEvaluator.addModel(NaiveBayes, 'NaiveBayes')
     #tree = DecisionTreeWrapper(classifier=DecisionTree, trainParameters={'numClasses': 4, 'categoricalFeaturesInfo' : {}})
     #dataClassifierEvaluator.addModel(tree, 'DecisionTreeWrapper')

@@ -8,5 +8,5 @@ spawn ssh $arg1@$arg2
 expect { 
     -regexp " $" { send "$arg3\n" }
 }
-expect -regexp " $"
+expect -regexp ":~$ "
 send "exit\n"

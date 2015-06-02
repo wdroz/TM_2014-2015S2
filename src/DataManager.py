@@ -60,12 +60,13 @@ class News(object):
     Classe qui permet de stocker des news
     '''
     def __init__(self, pubDate=None, symbole='', publication='', pubSource='', 
-                 marketStatus=[]):
+                 marketStatus=[], resetTime=True):
         self.pubDate = pubDate
-        try:
-            self.pubDate = pubDate.replace(hour=0, minute=0, second=0)
-        except:
-            pass # if None
+        if(resetTime):
+            try:
+                self.pubDate = pubDate.replace(hour=0, minute=0, second=0)
+            except:
+                pass # if None
         self.symbole = symbole
         self.publication = publication
         self.pubSource = pubSource

@@ -20,15 +20,25 @@ def decode(x):
     news = News()
     news.__dict__ = pickle.load(open(x, 'r'))
     return news
+
+def reUseDataClassifier():
+    dc = DataClassifier(None, SVMWithSGD)
+    dc.loadModel()
+
     
 def useDataClassifier(filepath='/media/droz/KIKOOLOL HDD/Corpus/dataset/dataset.txt', sc=None):
     MessageManager.debugMessage("useDataClassifier : start open file %s" % filepath)
     lines = sc.textFile(filepath)
     fullDataSet = lines.map(lambda line: literal_eval(line)).map(lambda (data,label): LabeledPoint((1 if label else 0), data))
+    fullDataSet.cache()
     #fullDataSet = sc.parallelize(fullDataSet)
     dc = DataClassifier(fullDataSet, SVMWithSGD)
     MessageManager.debugMessage("useDataClassifier : start crossvalidation")
     precMin, precMax, prec = dc.crossvalidation(5)
+    
+    MessageManager.debugMessage("useDataClassifier : train full dataset")
+    dc.train(fullDataSet)
+    dc.saveModel()
     print('min : %f, max : %f, mean : %f' % (precMin, precMax, prec))
     
 def classification(filepath='/media/droz/KIKOOLOL HDD/Corpus/dataset/dataset.txt', sc=None):
@@ -60,7 +70,7 @@ if __name__ == "__main__":
     #ttv = TextToVectSpark(1)
     #res = ttv.vectorize(featuresRdd)
     #classification(sc=sc)
-    useDataClassifier(sc=sc)     
+    useDataClassifier(filepath='hdfs://157.26.83.52/user/wdroz/dataset.txt', sc=sc)     
     
     #for x in res:
     #    print('vector len : %d, %s' % (x[0], str(x[1])))

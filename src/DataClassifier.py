@@ -149,14 +149,17 @@ class DataClassifierEvaluator(object):
                     nbTrue += matrix[real][predict]
                 else:
                     nbFalse += matrix[real][predict]
-            prec = nbTrue/float(nbTrue + nbFalse)
+            try:
+                prec = nbTrue/float(nbTrue + nbFalse)
+            except:
+                prec = -1.0
             chaine += 'prec : %f\n' % prec
         print(chaine)
         return chaine
         
     def _determineNbClasses(self, rdd):
         try:
-            return rdd.map(lambda (a,b): a).distinct().count()
+            return rdd.map(lambda a: a.label).distinct().count()
         except:
             return 4 # because fuck spark
         
