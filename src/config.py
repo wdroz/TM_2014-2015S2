@@ -21,6 +21,7 @@ DJANGO_CONF = {
     'streamStatus' : 'streamStatus',
     'streamSymbole' : 'getStreamingSymbole',
     'trainEntry' : 'getTrainingEntry',
+    'combi' : 'getAllCombiModelGraph',
 }
 
 def load_spark_conf():
