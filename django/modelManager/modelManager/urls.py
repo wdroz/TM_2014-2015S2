@@ -26,4 +26,5 @@ urlpatterns = [
     url(r'^addPoint/(?P<graph_name>.+)', views.addPoint),
     url(r'^getStreamingSymbole/(?P<graph_name>.+)', views.getStreamingSymbole),
     url(r'^getTrainingEntry/(?P<model_name>.+)', views.getTrainingEntry),
+    url(r'^getAllCombiModelGraph/', views.getAllCombiModelGraph), # getAllCombiModelGraph
 ]
