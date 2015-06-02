@@ -98,3 +98,11 @@ def addPoint(request, graph_name):
         return HttpResponse('OK')
     except Exception as e:
             return HttpResponse(str(e)) # TODO improve error
+            
+def getAllCombiModelGraph(request):
+    combi = []
+    predictModels = PredictModel.objects.all()
+    for model in predictModels:
+        for graph in PredictGraph.objects.filter(predictModel=model):
+            combi.append((model.name, graph.name))
+    return HttpResponse(str(combi)) 
