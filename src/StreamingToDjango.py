@@ -13,6 +13,7 @@ from ast import literal_eval
 import time
 import datetime
 import sys
+import random
 
 from pyspark import SparkContext
 from GoogleFinanceMarketSource import GoogleFinanceMarketSourceSpark
@@ -161,7 +162,6 @@ class StreamingToDjango(object):
         firstTime = True
         intersectRDD = None
         dataDirectory = config.FEATURES_CONF['hdfs'] + '/' + config.FEATURES_CONF['streamSave']
-        cpt = 0
         while(running):
             today = datetime.datetime.now()
             yesterday = today - datetime.timedelta(days=1)
@@ -181,15 +181,14 @@ class StreamingToDjango(object):
             try:
                 #sendRecordToDjango(intersectRDD)
                 print('after send record To django')
+                cpt = random.randint(1000000,9999999)
                 intersectRDD.saveAsPickleFile(dataDirectory + '/' + datetime.datetime.now().strftime('%Y-%m-%d--') + str(cpt))
-                cpt += 1
             except Exception as e:
                 print('MEGA EXCEPTION!!! %s' % str(e))
                 pass # empty rdd
             print('sleep')           
             time.sleep(taskdt)
             print('wake up')
-            
         running = True # TODO remove it
         
 if __name__ == '__main__':
