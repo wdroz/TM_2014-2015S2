@@ -9,7 +9,7 @@ import os
 os.environ['HOME'] = '/tmp'
 os.environ['SPARK_WORKER_DIR'] = '/tmp'
 '''
-from textblob import TextBlob, Word
+#from textblob import TextBlob, Word
 import re
 
 class FeaturesV2(object):
@@ -17,8 +17,8 @@ class FeaturesV2(object):
         self.news = news
         #self.publication = re.sub(r'[^A-Za-z.,$! '']', '', news.publication)
         self.publication = re.sub(r'[^A-Za-z$! '']', '', news.publication).upper()
-        self.textBlob = self.textblobLemma(TextBlob(self.publication))
-        self.polarity = self.textBlob.sentiment.polarity
+        #self.textBlob = self.textblobLemma(TextBlob(self.publication))
+        #self.polarity = self.textBlob.sentiment.polarity
         self.processMarketStatus()
         self.words = self.processWords()
         self.bg2 = self.processBigram(2)
