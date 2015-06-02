@@ -17,7 +17,7 @@ from os import environ
 def _fctSubProcess(model, graph_name):
     env = environ.copy()
     #/spark-1.3.1-bin-hadoop2.4/bin/spark-submit --deploy-mode client --master yarn-client --py-files \"$zipString\" --archives \"nltk_data.zip\" $main")
-    cmd = '%s/bin/spark-submit --deploy-mode client --master yarn-client --pyfiles "PySrc3.zip,PySrc2.zip,PySrc1.zip" StreamingToDjango.py' % env['SPARK_HOME']
+    cmd = '%s/bin/spark-submit --deploy-mode client --master yarn-client --py-files "PySrc3.zip,PySrc2.zip,PySrc1.zip" StreamingToDjango.py' % env['SPARK_HOME']
     print(cmd)
     call([cmd, '"%s" "%s"' % (model, graph_name)])
 
