@@ -5,7 +5,7 @@ Created on Tue Jun  2 13:08:00 2015
 @author: droz
 """
 
-from StreamingToDjango import StreamingToDjango
+#from StreamingToDjango import StreamingToDjango
 import requests
 import config
 from ast import literal_eval
@@ -17,9 +17,21 @@ from os import environ
 def _fctSubProcess(model, graph_name):
     env = environ.copy()
     #/spark-1.3.1-bin-hadoop2.4/bin/spark-submit --deploy-mode client --master yarn-client --py-files \"$zipString\" --archives \"nltk_data.zip\" $main")
-    cmd = '%s/bin/spark-submit --deploy-mode client --master yarn-client --py-files "PySrc3.zip,PySrc2.zip,PySrc1.zip" StreamingToDjango.py' % env['SPARK_HOME']
-    print(cmd)
-    call([cmd, '"%s" "%s"' % (model, graph_name)])
+    cmd = '%s/bin/spark-submit' % env['SPARK_HOME']
+    args = []
+    args.append(cmd)
+    args.append('--deploy-mode')
+    args.append('client')
+    args.append('--master')
+    args.append('yarn-client')
+    args.append('--py-files')
+    args.append('PySrc3.zip,PySrc2.zip,PySrc1.zip')
+    args.append('StreamingToDjango.py')
+    args.append(str(model))
+    args.append(str(graph_name))
+    #arg = '--deploy-mode client --master yarn-client --py-files "PySrc3.zip,PySrc2.zip,PySrc1.zip" StreamingToDjango.py ' + '"%s" "%s"' % (model, graph_name)
+    print(args)
+    call(args)
 
 def runAsync(model, graph_name):
     Process(target=_fctSubProcess, args=(model, graph_name)).start()
