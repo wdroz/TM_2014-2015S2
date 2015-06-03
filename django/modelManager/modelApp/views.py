@@ -4,7 +4,6 @@ from modelApp.models import PredictGraph
 from modelApp.models import PredictPoint
 from django.http import HttpResponse
 from django.utils import timezone
-from ast import literal_eval
 
 import pygal
 from datetime import timedelta
