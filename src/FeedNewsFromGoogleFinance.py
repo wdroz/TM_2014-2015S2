@@ -28,6 +28,12 @@ from collections import defaultdict
 import json
 import time
 
+def tryOrSet(listOfItems, index, defaultValue):
+    try:
+        return listOfItems[index]
+    except:
+        return defaultValue
+
 class FeedNewsFromGoogleFinance(object):
     def __init__(self):
         self.url = 'https://www.google.com/finance/company_news'
@@ -59,11 +65,11 @@ class FeedNewsFromGoogleFinance(object):
                     recentNews.append(News(pubDate=date, symbole=symbole, publication=quotes[cpt], pubSource=sources[cpt]))
                     print('sources : %s' % sources)
                 except:
-                    try:
-                        recentNews.append(News(pubDate=datetime.datetime.now(), symbole=symbole, publication=quotes[cpt], pubSource=sources[cpt], resetTime=False))
-                    except:
-                        print(text)
-                        raise Exception(text)
+                    pubSource = tryOrSet(sources, cpt, 'inconnu')
+                    pubDate = tryOrSet(dates, cpt, datetime.datetime.now())
+                    publication = tryOrSet(quotes, cpt, 'pas de text')
+                    recentNews.append(News(pubDate=pubDate, symbole=symbole, publication=publication, pubSource=pubSource, resetTime=False))
+                    
             params['start'] += self.num
         print('nb news found: %d' % len(recentNews))    
         return recentNews
