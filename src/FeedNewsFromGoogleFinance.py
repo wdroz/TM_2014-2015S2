@@ -52,14 +52,18 @@ class FeedNewsFromGoogleFinance(object):
             sources = re.findall(self.expPubSource, text)
             if(len(quotes) < self.num):
                 hasMoreQuote=False
-            for cpt in xrange(len(quotes)):
+            for cpt in range(len(quotes)):
                 try:
                     #Feb 26, 2015
                     date = datetime.datetime.strptime(dates[cpt], "%b %d, %Y")
                     recentNews.append(News(pubDate=date, symbole=symbole, publication=quotes[cpt], pubSource=sources[cpt]))
                     print('sources : %s' % sources)
                 except:
-                    recentNews.append(News(pubDate=datetime.datetime.now(), symbole=symbole, publication=quotes[cpt], pubSource=sources[cpt], resetTime=False))
+                    try:
+                        recentNews.append(News(pubDate=datetime.datetime.now(), symbole=symbole, publication=quotes[cpt], pubSource=sources[cpt], resetTime=False))
+                    except:
+                        print(text)
+                        raise Exception(text)
             params['start'] += self.num
         print('nb news found: %d' % len(recentNews))    
         return recentNews
