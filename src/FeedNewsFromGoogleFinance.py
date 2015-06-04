@@ -66,7 +66,7 @@ class FeedNewsFromGoogleFinance(object):
                     print('sources : %s' % sources)
                 except:
                     pubSource = tryOrSet(sources, cpt, 'inconnu')
-                    pubDate = tryOrSet(dates, cpt, datetime.datetime.now())
+                    pubDate = datetime.datetime.now() # TODO minus time delta
                     publication = tryOrSet(quotes, cpt, 'pas de text')
                     recentNews.append(News(pubDate=pubDate, symbole=symbole, publication=publication, pubSource=pubSource, resetTime=False))
                     
