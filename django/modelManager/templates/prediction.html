@@ -26,11 +26,26 @@
             <figure>
               <embed type="image/svg+xml" src="/graph/{{ graph.name }}" width="600" height="480" />
             </figure>
-            <ul>
+            <table id="{{ graph.name }}" class="tablesorter"> 
+            <thead> 
+            <tr> 
+                <th>Pub. date</th> 
+                <th>Source</th> 
+                <th>Text</th> 
+                <th>Score</th> 
+            </tr> 
+            </thead> 
+            <tbody> 
             {% for point in graph.predictpoint_set.all %}
-                <li>{{ point }}</li>
+                <tr>
+                    <td>{{ point.newsPubDate }}</td>
+                    <td>{{ point.newsSource }}</td>
+                    <td>{{ point.newsText }}</td>
+                    <td>{{ point.predictScore }}</td>
+                </tr>
             {% endfor %}
-            </ul>
+            </tbody>
+            </table>
         {% endfor %}
 {% endblock %}
 
