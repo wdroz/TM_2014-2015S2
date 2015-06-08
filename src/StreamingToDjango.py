@@ -182,8 +182,9 @@ class StreamingToDjango(object):
             try:
                 #sendRecordToDjango(intersectRDD)
                 print('after send record To django')
-                cpt = random.randint(1000000,9999999)
-                intersectRDD.saveAsPickleFile(dataDirectory + '/' + datetime.datetime.now().strftime('%Y-%m-%d--') + str(cpt))
+                if not intersectRDD.isEmpty():
+                    cpt = random.randint(1000000,9999999)
+                    intersectRDD.saveAsPickleFile(dataDirectory + '/' + datetime.datetime.now().strftime('%Y-%m-%d--') + str(cpt))
             except Exception as e:
                 print('MEGA EXCEPTION!!! %s' % str(e))
                 pass # empty rdd
