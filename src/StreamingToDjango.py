@@ -176,7 +176,7 @@ class StreamingToDjango(object):
                     #intersectRDD = oldNewsRDD.intersection(newsRDD)
                     intersectRDD = newsRDD.subtract(oldNewsRDD)
                 except:
-                    pass # empty rdd
+                    print('subtract FAIL!')
             
             oldNewsRDD = newsRDD
             sendRecordToDjango(intersectRDD)
