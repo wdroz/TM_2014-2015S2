@@ -167,6 +167,7 @@ class StreamingToDjango(object):
             yesterday = today - datetime.timedelta(days=1)
             tomorrow = today + datetime.timedelta(days=1)
             newsRDD = symbolesRDD.flatMap(lambda x: feed.lookingAt(x, yesterday, tomorrow, []))
+            print('nb news raws : %d' % newsRDD.count())
             if(firstTime):
                 firstTime = False
                 intersectRDD = newsRDD
