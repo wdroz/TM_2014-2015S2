@@ -79,7 +79,7 @@ class News(object):
         return myString
         
     def __hash__(self):
-        return str(self).__hash__()
+        return str(self.publication).__hash__()
 
 class DataManager(object):
     '''
