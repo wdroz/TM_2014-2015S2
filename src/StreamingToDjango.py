@@ -174,7 +174,7 @@ class StreamingToDjango(object):
             else:
                 try:
                     #intersectRDD = oldNewsRDD.intersection(newsRDD)
-                    intersectRDD = newsRDD.substract(oldNewsRDD)
+                    intersectRDD = newsRDD.subtract(oldNewsRDD)
                 except:
                     pass # empty rdd
             
