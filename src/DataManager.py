@@ -82,7 +82,7 @@ class News(object):
         return str(self.publication).__hash__()
         
     def __eq__(self, other):
-        return other.__hash__ == self.__hash__
+        return other.__hash__() == self.__hash__()
 
 class DataManager(object):
     '''
