@@ -80,6 +80,9 @@ class News(object):
         
     def __hash__(self):
         return str(self.publication).__hash__()
+        
+    def __eq__(self, other):
+        return other.__hash__ == self.__hash__
 
 class DataManager(object):
     '''
