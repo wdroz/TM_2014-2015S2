@@ -174,7 +174,11 @@ class StreamingToDjango(object):
             else:
                 try:
                     #intersectRDD = oldNewsRDD.intersection(newsRDD)
-                    intersectRDD = newsRDD.subtract(oldNewsRDD)
+                    newsList = newsRDD.collect()
+                    oldNewsList = oldNewsRDD.collect()
+                    intersectionList = [x for x in newsList if x not in oldNewsList]
+                    intersectRDD = sc.parallelize(intersectionList)
+                    print('subtract = %d' % len(intersectionList))
                 except:
                     print('subtract FAIL!')
             
