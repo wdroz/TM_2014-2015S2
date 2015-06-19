@@ -32,7 +32,7 @@ def graph(request, graph_name):
     for i in range(numberOfX):
         labels.append(str(start + timedelta(hours=dx*i)))
     stackedline_chart = pygal.StackedLine(fill=True, x_label_rotation=30)
-    stackedline_chart.title = 'market prediction (in %) [' + str(graph_name) + ']'
+    stackedline_chart.title = 'market prediction (# of news) [' + str(graph_name) + ']'
     stackedline_chart.x_labels = labels
     veryBad = predictPointToList(graph.predictpoint_set.filter(predictScore=0.0), hours=hours, numberOfX=numberOfX)
     bad = predictPointToList(graph.predictpoint_set.filter(predictScore=1.0), hours=hours, numberOfX=numberOfX)
