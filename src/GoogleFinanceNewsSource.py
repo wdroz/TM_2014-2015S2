@@ -27,6 +27,11 @@ class GoogleFinanceNewsSource(NewsSource):
         self.h = HTMLParser.HTMLParser()
         
     def lookingAt(self, symbole, startDate, endDate, keywords):
+        '''
+        méthode pour rechercher des news
+             -symbole ce qu'on cherche depuis startDate jusqu'à endDate
+             avec les keywords dans le contenu
+        '''
         hasMoreQuote=True
         params = {'q' : symbole, 'startdate' : str(startDate.strftime('%Y-%m-%d')), 'enddate' : str(endDate.strftime('%Y-%m-%d')), 'start' : 0, 'num' : self.num}
         while(hasMoreQuote):

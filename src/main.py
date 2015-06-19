@@ -3,6 +3,9 @@
 Created on Mon Mar  9 12:55:38 2015
 
 @author: droz
+
+DOT NO USE - DEPRECIATED
+
 """
 from MessageManager import MessageManager
 from ToolsTM import easyBuildDataManager

@@ -3,6 +3,9 @@
 Created on Wed Mar 11 13:52:45 2015
 
 @author: droz
+
+DO NOT USE - DEPRECIATED
+
 """
 
 import pickle

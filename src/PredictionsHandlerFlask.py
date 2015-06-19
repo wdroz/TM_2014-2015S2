@@ -3,6 +3,9 @@
 Created on Tue Apr 28 10:05:01 2015
 
 @author: droz
+
+DO NOT USE - DEPRECIATED
+
 """
 
 from DataManager import News, NewsPrediction

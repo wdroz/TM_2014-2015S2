@@ -3,6 +3,9 @@
 Created on Mon Mar 30 08:11:44 2015
 
 @author: droz
+
+DO NOT USE - DEPRECIATED
+
 """
 from pyspark import SparkContext
 from pyspark.streaming import StreamingContext

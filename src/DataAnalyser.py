@@ -9,6 +9,9 @@ import matplotlib.pyplot as plt
 from numpy import array
 
 class DataAnalyzerLocal(object):
+    '''
+    class for analyze data locally.
+    '''
     def __init__(self):
         self.features = []
         self.endToEnd = []
@@ -17,6 +20,9 @@ class DataAnalyzerLocal(object):
         self.nbFeatures = 0
     
     def addFeature(self, feature):
+        '''
+        add a feature to analyze
+        '''
         n = 1
         try:
             if(feature.isDoubleCheckedN(n)):
@@ -29,6 +35,9 @@ class DataAnalyzerLocal(object):
             pass # not market values
         
     def plot(self):
+        '''
+        Plot the entire data for show the normalized data change.
+        '''
         correlation = float(self.nbDoubleChecked)/self.nbFeatures
         print('correlation : %f' % correlation)
         #plt.hist(array(self.endToEnd), bins=20)

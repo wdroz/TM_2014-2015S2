@@ -14,6 +14,7 @@ from UseFeaturesv2 import DataSetMakerV2
 from ReutersNewsSource import ReutersNewsSourceHDFSV2
 from pyspark import SparkContext, SparkConf
 from GoogleFinanceMarketSource import GoogleFinanceMarketSourceSpark
+import config
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -34,28 +35,21 @@ if __name__ == "__main__":
     #cm = [[71,2,3,7],[8,70,1,3],[8,1,24,3], [12,4,0,70]]
     #plot_confusion_matrix(cm)
     
-    conf = SparkConf()
-    #conf.set('spark.shuffle.blockTransferService', 'nio')
-    conf.set('spark.files.fetchTimeout', '180')
-    conf.set('spark.files.overwrite', 'yes')
-    conf.set('spark.akka.timeout', '180')
-    conf.set('spark.task.maxFailures', '30000')
-    conf.set('spark.akka.frameSize', '500')
-    conf.set('spark.network.timeout', '180')
-    #conf.set('spark.executor.memory', '6g')
-    #conf.set('spark.shuffle.memoryFraction', "0")
+    conf = config.load_spark_conf()
+   
     sc = SparkContext(conf=conf)
     #toto = DataClassifierMultiClasses(SVMWithSGD, 5)
     #path = '/media/droz/KIKOOLOL HDD/Corpus/headlines-docs.csv'
-    path = 'hdfs://157.26.83.52/user/wdroz/mini-headlines-docs.csv'    
+    #path = 'hdfs://157.26.83.52/user/wdroz/mini-headlines-docs.csv' 
+    path = config.FEATURES_CONF['local'] + '/' + 'headlines-docs.csv'    
     fileRdd = sc.textFile(path, use_unicode=False)
     newSource = ReutersNewsSourceHDFSV2(fileRdd)
 
     newSource.lookingAll('NASDAQ:GOOGL', ['GOOG', 'GOOGL', 'GOOGLE'])
-    newSource.lookingAll('NASDAQ:NVDA', ['NVIDIA'])
-    newSource.lookingAll('VTX:NESN', ['NESTLE'])
-    newSource.lookingAll('VTX:SCMN', ['SWISSCOM'])
-    newSource.lookingAll('VTX:NOVN', ['NOVARTIS'])
+    #newSource.lookingAll('NASDAQ:NVDA', ['NVIDIA'])
+    #newSource.lookingAll('VTX:NESN', ['NESTLE'])
+    #newSource.lookingAll('VTX:SCMN', ['SWISSCOM'])
+    #newSource.lookingAll('VTX:NOVN', ['NOVARTIS'])
     
     newsRDD = newSource.doIt()
     marketSource = GoogleFinanceMarketSourceSpark(['NASDAQ:GOOGL', 'NASDAQ:NVDA', 'VTX:NESN', 'VTX:SCMN', 'VTX:NOVN'])
@@ -63,14 +57,14 @@ if __name__ == "__main__":
     #newsRDD = newsRDD.randomSplit([1,1,1,1,1,1,1,1,1,1,1,1,1,1,1])[0]
     newsRDD.cache()
     print('nb news : %d' % newsRDD.count())
-    dataSetMaker = DataSetMakerV2(n=200000)
-    fullDataSet = dataSetMaker.processBinary(newsRDD)
+    dataSetMaker = DataSetMakerV2(n=config.FEATURES_CONF['vecteur_size'])
+    fullDataSet = dataSetMaker.process(newsRDD) # TODO change
     fullDataSet.cache()
     myClassifier = ClassifiersWrapper()
-    myClassifier.addClassifier(classifier=SVMWithSGD, trainParameters={}, weight=0.3)
-    myClassifier.addClassifier(classifier=LogisticRegressionWithSGD, trainParameters={}, weight=0.3)
-    myClassifier.addClassifier(classifier=NaiveBayes, trainParameters={}, weight=0.3)
-    myClassifier.addClassifier(classifier=LogisticRegressionWithLBFGS, trainParameters={}, weight=0.7)
+    myClassifier.addClassifier(classifier=SVMWithSGD, trainParameters={}, weight=0.4)
+    #myClassifier.addClassifier(classifier=LogisticRegressionWithSGD, trainParameters={}, weight=0.3)
+    myClassifier.addClassifier(classifier=NaiveBayes, trainParameters={}, weight=0.4)
+    myClassifier.addClassifier(classifier=LogisticRegressionWithLBFGS, trainParameters={}, weight=0.4)
     
     myClassifier2 = ClassifiersWrapper()
     myClassifier2.addClassifier(classifier=SVMWithSGD, trainParameters={}, weight=0.3)
@@ -84,13 +78,13 @@ if __name__ == "__main__":
     myClassifierOnevsMany = DataClassifierMultiClassesOneVsMany(myClassifier2, 4)
     #dataClassifierEvaluator.addModel(myClassifierOnevsMany, 'myClassifierOnevsMany')
     #dataClassifierEvaluator.addModel(myClassifierOnevsOne, 'myClassifierOnevsOne')
-    dataClassifierEvaluator.addModel(myClassifier, 'myClassifier')
+    dataClassifierEvaluator.addModel(myClassifierOnevsOne, 'myClassifierOnevsOne-combined-max')
     #dataClassifierEvaluator.addModel(NaiveBayes, 'NaiveBayes')
     #tree = DecisionTreeWrapper(classifier=DecisionTree, trainParameters={'numClasses': 4, 'categoricalFeaturesInfo' : {}})
     #dataClassifierEvaluator.addModel(tree, 'DecisionTreeWrapper')
     #dataClassifierEvaluator.addModel(LogisticRegressionWithLBFGS, 'LogisticRegressionWithLBFGS')
     #dataClassifierEvaluator.addModel(SVMWithSGD, 'SVMWithSGD')
-    dataClassifierEvaluator.crossvalidation(nbSplits=2)
+    dataClassifierEvaluator.crossvalidation(nbSplits=3)
     plot_confusion_matrix(dataClassifierEvaluator.matrixConfusion)
     #dataClassifierEvaluator.selectBestModel()
     #dc = DataClassifier(fullDataSet, LogisticRegressionWithLBFGS)

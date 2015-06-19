@@ -3,6 +3,9 @@
 Created on Wed Mar 11 09:33:13 2015
 
 @author: droz
+
+DO NOT USE - DEPRECIATED
+
 """
 
 from DataManager import DataManager
@@ -11,6 +14,9 @@ from GoogleFinanceMarketSource import GoogleFinanceMarketSource
 from ReutersNewsSource import ReutersNewsSource
 
 def easyBuildDataManager(load=False, save=True):
+    '''
+    method helper for building data manager
+    '''
     dm = DataManager()
     if(load):
         dm.load(DataManager.DEFAULT_BACKUP_FILENAME)

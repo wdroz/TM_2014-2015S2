@@ -23,6 +23,9 @@ from DataClassifierV2 import DataClassifierMultiClassesOneVsOne
 from FeedNewsFromGoogleFinance import FeedNewsFromGoogleFinance
 
 class StreamingToDjango(object):
+    '''
+    class for communicate with django from the driver.
+    '''
     def __init__(self, model_name, graph_name):
         self.model = StreamingToDjango.load_model(model_name)
         self.model_name = model_name

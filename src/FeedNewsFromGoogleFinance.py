@@ -29,12 +29,18 @@ import json
 import time
 
 def tryOrSet(listOfItems, index, defaultValue):
+    '''
+    try to access to listOfItems at index. if fail return defaultValue
+    '''
     try:
         return listOfItems[index]
     except:
         return defaultValue
 
 class FeedNewsFromGoogleFinance(object):
+    '''
+    retrieve news from google finance
+    '''
     def __init__(self):
         self.url = 'https://www.google.com/finance/company_news'
         self.expNews = '<div style="width:100%;">([^/]+)</div>'

@@ -3,6 +3,9 @@
 Created on Thu Mar 26 12:34:44 2015
 
 @author: droz
+
+module for testing early version of GUI with kivy. Do not use
+
 """
 
 

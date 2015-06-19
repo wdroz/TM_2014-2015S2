@@ -3,6 +3,9 @@
 Created on Tue Mar 17 10:18:40 2015
 
 @author: droz
+
+DO NOT USE - DEPRECIATE
+
 """
 
 from textblob import Word, TextBlob

@@ -23,10 +23,19 @@ from pyspark.mllib.classification import SVMWithSGD, LogisticRegressionWithSGD, 
 from pyspark.mllib.feature import HashingTF
 
 class DataSetMakerV2(object):
+    '''
+    class for create vectors from texts.
+    '''
     def __init__(self, n=10000):
+        '''
+        n is the size of vectors
+        '''
         self.n = n
         
     def processKeepNews(self, newsRDD):
+        '''
+        process de vectorization, but keep the news for each record in the RDD
+        '''
         hashingTF = HashingTF(self.n)
         self.newsRDD = newsRDD
         self.featuresRDD = newsRDD.map(lambda x: FeaturesV2(x))
@@ -36,6 +45,9 @@ class DataSetMakerV2(object):
         return self.labeledPointsRdd
         
     def processBinary(self, newsRDD):
+        '''
+        Process for 2 classes
+        '''
         hashingTF = HashingTF(self.n)
         self.newsRDD = newsRDD
         self.featuresRDD = newsRDD.map(lambda x: FeaturesV2(x))
@@ -60,6 +72,9 @@ class DataSetMakerV2(object):
         return self.labeledPointsRdd
         
     def process(self, newsRDD):
+        '''
+        process for 4 classes
+        '''
         hashingTF = HashingTF(self.n)
         self.newsRDD = newsRDD
         self.featuresRDD = newsRDD.map(lambda x: FeaturesV2(x))
@@ -89,6 +104,9 @@ class DataSetMakerV2(object):
        
 
 class DataSetMaker(object):
+    '''
+    DO NOT USE - DEPRECIATED
+    '''
     def __init__(self):
         pass
         

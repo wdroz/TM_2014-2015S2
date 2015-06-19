@@ -3,6 +3,9 @@
 Created on Wed Apr  1 14:24:01 2015
 
 @author: droz
+
+DO NOT USE - DEPRECIATED
+
 """
 '''
 import os

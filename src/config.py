@@ -7,6 +7,7 @@ Created on Tue May 26 13:34:40 2015
 
 FEATURES_CONF = {
     'hdfs' : 'hdfs://157.26.83.52',
+    'local' : '/home/droz/corpus',
     'streamSave' : 'user/wdroz/stream2',
     'headlines' : 'user/wdroz/headlines-docs.csv',
     'vecteur_size' : 200000,

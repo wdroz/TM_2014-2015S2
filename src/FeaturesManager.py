@@ -13,6 +13,9 @@ os.environ['SPARK_WORKER_DIR'] = '/tmp'
 import re
 
 class FeaturesV2(object):
+    '''
+    class for extract features from news
+    '''
     def __init__(self, news):
         self.news = news
         #self.publication = re.sub(r'[^A-Za-z.,$! '']', '', news.publication)
