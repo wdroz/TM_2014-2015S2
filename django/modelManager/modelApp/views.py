@@ -92,8 +92,10 @@ def addPoint(request, graph_name):
     try:
         myPredictGraph = PredictGraph.objects.get(name=graph_name)
         point = request.POST # no security
-        newPoint = PredictPoint(newsPubDate=point['newsPubDate'], newsSource=point['newsSource'], newsText=point['newsText'], predictScore=point['predictScore'], predictGraph=myPredictGraph)
-        newPoint.save()
+        existePoints = PredictPoint.objects.filter(newsText=point['newsText'], predictGraph=myPredictGraph)
+        if not existePoints:
+            newPoint = PredictPoint(newsPubDate=point['newsPubDate'], newsSource=point['newsSource'], newsText=point['newsText'], predictScore=point['predictScore'], predictGraph=myPredictGraph)
+            newPoint.save()
         return HttpResponse('OK')
     except Exception as e:
             return HttpResponse(str(e)) # TODO improve error
