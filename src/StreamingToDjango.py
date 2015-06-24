@@ -186,7 +186,7 @@ class StreamingToDjango(object):
                     print('subtract FAIL!')
             
             oldNewsRDD = newsRDD
-            sendRecordToDjango(intersectRDD)
+            sendRecordToDjango(newsRDD) # better if we can send only intersectRDD
             try:
                 #sendRecordToDjango(intersectRDD)
                 print('after send record To django')
